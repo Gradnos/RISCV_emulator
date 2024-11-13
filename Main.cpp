@@ -1,7 +1,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
+#include "imgui_internal.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -11,6 +11,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 int WIDTH = 1200;
+bool consoleOpen = true;
 
 int main()
 {
@@ -106,6 +107,10 @@ int main()
         bool hovered = ImGui::IsMouseHoveringRect(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), ImVec2(ImGui::GetWindowSize().x + ImGui::GetWindowPos().x,ImGui::GetWindowPos().y + 20), false);
 
         ImGui::BeginMenuBar();
+        ImGui::Text("Text Editor // ");
+        if (ImGui::Button("console")) {
+            consoleOpen = !consoleOpen;
+        }
         if (hovered) ImGui::Text("hov");
         else ImGui::Text("not hov");
         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
@@ -128,6 +133,8 @@ int main()
             ImGui::SetWindowSize(ImVec2(width, height));
             ImGui::SetWindowPos(ImVec2(0, 0));
         }
+
+
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() - style.ItemSpacing.x);
         if (ImGui::Button(" X ")) {
             glfwSetWindowShouldClose(window, true);
@@ -138,16 +145,37 @@ int main()
 
         
 
+
+
+
+        if (consoleOpen) {
+            ImGui::Begin("Console", (bool*)0, window_flags);
+            ImGui::BeginMenuBar();
+            ImGui::Text("console");
+            float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
+
+            float widthNeeded = buttonWidth1 + buttonWidth1;
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+            if (ImGui::Button(" X ")) {
+                consoleOpen = false;
+            }
+            ImGui::EndMenuBar();
+            ImGui::End();
+        }
+
         ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
         ///ImGui::InputTextMultiline(NULL, text.get(), 1000);
         //glfwSetWindowSize(window, ImGui::GetWindowSize().x + 4, ImGui::GetWindowSize().y + 4);
         //glfwSetWindowPos(window, ImGui::GetWindowPos().x - 2, ImGui::GetWindowPos().y - 2);
         ImGui::End();
 
+
         ImGui::SetNextWindowClass(&window_class);
         ImGui::Begin("wow", (bool*)0, window_flags);
         ImGui::Text("hasada");
         ImGui::End();
+
+        
 
 
         ImGui::Render();
