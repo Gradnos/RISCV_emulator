@@ -22,7 +22,7 @@ int main()
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 
-    GLFWwindow* window = glfwCreateWindow(1, 1, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, 800, "LearnOpenGL", NULL, NULL);
     
     if (window == NULL)
     {
@@ -66,6 +66,7 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 330");
 
 
+    static char text[1024 * 16];
 
     while (!glfwWindowShouldClose(window))
     {
@@ -77,7 +78,7 @@ int main()
 
         processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
 
@@ -95,29 +96,35 @@ int main()
 
 
         ImGui::Begin("hello",(bool*)0 , window_flags);
-        ImGui::GetWindowPos().x;
         bool hovered = ImGui::IsMouseHoveringRect(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), ImVec2(ImGui::GetWindowSize().x + ImGui::GetWindowPos().x,ImGui::GetWindowPos().y + 20), false);
+        glfwSetWindowSize(window, ImGui::GetWindowSize().x + 4, ImGui::GetWindowSize().y + 4);
+        glfwSetWindowPos(window, ImGui::GetWindowPos().x - 2, ImGui::GetWindowPos().y - 2);
+
+        ImGui::BeginMenuBar();
         if (hovered) ImGui::Text("hov");
         else ImGui::Text("not hov");
-        ImGui::Text("riscv");
-        ImGui::BeginMenuBar();
         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
 
         float widthNeeded = buttonWidth1;
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-        ImGui::Button(" X ");
- 
-
+        if (ImGui::Button(" X ")) {
+            glfwSetWindowShouldClose(window, true);
+        }
+        
 
         ImGui::MenuItem("hellow", "C", false, true);
         ImGui::EndMenuBar();
 
+        
+
+        ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
+        ///ImGui::InputTextMultiline(NULL, text.get(), 1000);
 
         ImGui::End();
 
 
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
