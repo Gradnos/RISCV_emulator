@@ -102,6 +102,7 @@ int main()
         window_flags |= ImGuiWindowFlags_MenuBar;
         window_flags |= ImGuiWindowFlags_NoTitleBar;
 
+
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
 
         ImGui::Begin("Splitter test",(bool*)false, window_flags);
@@ -149,6 +150,7 @@ int main()
         static float ratioW = 0.8f;
         static float ratioH = 0.8f;
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_MenuBarBg, IM_COL32_BLACK_TRANS);
 
         float w = mainSize.x * ratioW; //text editor width
         float h = mainSize.y * ratioH; // visualiser height
@@ -165,6 +167,8 @@ int main()
                 ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
                 w += ImGui::GetIO().MouseDelta.x;
                 ratioW = w / mainSize.x;
+                if (ratioW < 0.2) ratioW = 0.2;
+                if (ratioW > 0.8) ratioW = 0.8;
             }
 
             ImGui::SameLine();
@@ -185,6 +189,8 @@ int main()
                         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
                         h += ImGui::GetIO().MouseDelta.y;
                         ratioH = h / mainSize.y;
+                        if (ratioH < 0.3) ratioH = 0.3;
+                        if (ratioH > 0.8) ratioH = 0.8;
                     }
                 }
                 if (consoleOpen) {
@@ -193,6 +199,7 @@ int main()
             ImGui::EndChild();
         }
         ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
 
         ImGui::End();
 
