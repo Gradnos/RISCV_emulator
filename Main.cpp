@@ -9,9 +9,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void buildDock(const char* name, ImGuiID mainDockId);
-void helpmee();
-void split();
 void consoleWindow(ImVec2 vec2);
 void textEditor(ImVec2 vec2);
 void visualiser(ImVec2 vec2);
@@ -20,6 +17,7 @@ int WIDTH = 1200;
 bool consoleOpen = true;
 bool visualiserOpen = true;
 bool firstTime = true;
+bool maximized = true;
 
 void ShowExampleAppDockSpace(bool* p_open);
 static char text[1024 * 16];
@@ -101,7 +99,10 @@ int main()
         ImGuiWindowFlags window_flags = 0;
         window_flags |= ImGuiWindowFlags_MenuBar;
         window_flags |= ImGuiWindowFlags_NoTitleBar;
-
+        if (maximized) {
+            window_flags |= ImGuiWindowFlags_NoResize;
+            window_flags |= ImGuiWindowFlags_NoMove;
+        }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
 
@@ -124,19 +125,20 @@ int main()
         float widthNeeded = buttonWidth1 + buttonWidth2 + style.ItemSpacing.x;
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() - style.ItemSpacing.x);
+        int xpos, ypos, width, height;
+        maximized = false;
+        glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &xpos, &ypos, &width, &height);
+        if (ImGui::GetWindowSize().x == width && ImGui::GetWindowSize().y == height &&
+        ImGui::GetWindowPos().x == xpos && ImGui::GetWindowPos().y == ypos)
+        maximized = true;
         if (ImGui::Button(" [] ")) {
-            int xpos, ypos, width, height;
-            bool maximized = false;
-            glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &xpos, &ypos, &width, &height);
-            if (ImGui::GetWindowSize().x == width && ImGui::GetWindowSize().y == height &&
-                ImGui::GetWindowPos().x == xpos && ImGui::GetWindowPos().y == ypos)
-                maximized = true;
             if (maximized) {
                 width = 800;
                 height = 600;
             }
             ImGui::SetWindowSize(ImVec2(width, height));
             ImGui::SetWindowPos(ImVec2(0, 0));
+            maximized = !maximized;
         }
 
 
