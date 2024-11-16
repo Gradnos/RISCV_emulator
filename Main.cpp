@@ -9,9 +9,20 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void buildDock(const char* name, ImGuiID mainDockId);
+void helpmee();
+void split();
+void consoleWindow(ImVec2 vec2);
+void textEditor(ImVec2 vec2);
+void visualiser(ImVec2 vec2);
 
 int WIDTH = 1200;
 bool consoleOpen = true;
+bool visualiserOpen = true;
+bool firstTime = true;
+
+void ShowExampleAppDockSpace(bool* p_open);
+static char text[1024 * 16];
 
 int main()
 {
@@ -72,7 +83,7 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 330");
 
 
-    static char text[1024 * 16];
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -87,32 +98,22 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ImGuiWindowClass window_class;
-        window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
-        ImGui::SetNextWindowClass(&window_class);
-
-        ImGui::SetWindowPos(ImVec2(0,0));
-        ImGui::SetWindowSize(ImVec2(WIDTH, 800));
-
         ImGuiWindowFlags window_flags = 0;
-        //window_flags |= ImGuiWindowFlags_NoMove;
-        //window_flags |= ImGuiWindowFlags_NoResize;
-       // window_flags |= ImGuiWindowFlags_NoCollapse;
-        //window_flags |= ImGuiWindowFlags_NoDecoration;
         window_flags |= ImGuiWindowFlags_MenuBar;
         window_flags |= ImGuiWindowFlags_NoTitleBar;
-        
-        ImGui::SetNextWindowCollapsed(true);
-        ImGui::Begin("hello",(bool*)0 , window_flags);
-        bool hovered = ImGui::IsMouseHoveringRect(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), ImVec2(ImGui::GetWindowSize().x + ImGui::GetWindowPos().x,ImGui::GetWindowPos().y + 20), false);
 
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+
+        ImGui::Begin("Splitter test",(bool*)false, window_flags);
         ImGui::BeginMenuBar();
-        ImGui::Text("Text Editor // ");
+        ImGui::Text("RISCV emulator // ");
         if (ImGui::Button("console")) {
             consoleOpen = !consoleOpen;
         }
-        if (hovered) ImGui::Text("hov");
-        else ImGui::Text("not hov");
+        if (ImGui::Button("visualiser")) {
+            visualiserOpen = !visualiserOpen;
+        }
+
         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
         float buttonWidth2 = ImGui::CalcTextSize(" [] ").x;
 
@@ -139,44 +140,49 @@ int main()
         if (ImGui::Button(" X ")) {
             glfwSetWindowShouldClose(window, true);
         }
-
-        ImGui::MenuItem("hellow", "C", false, true);
         ImGui::EndMenuBar();
 
+
+        static float w = 200.0f;
+        static float h = 300.0f;
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
         
 
 
+        textEditor(ImVec2(w, h));
 
-
-        if (consoleOpen) {
-            ImGui::Begin("Console", (bool*)0, window_flags);
-            ImGui::BeginMenuBar();
-            ImGui::Text("console");
-            float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
-
-            float widthNeeded = buttonWidth1 + buttonWidth1;
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-            if (ImGui::Button(" X ")) {
-                consoleOpen = false;
+        if (visualiserOpen) {
+            ImGui::SameLine();
+            ImGui::InvisibleButton("vsplitter", ImVec2(4.0f, h));
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
             }
-            ImGui::EndMenuBar();
-            ImGui::End();
+            if (ImGui::IsItemActive()) {
+                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+                w += ImGui::GetIO().MouseDelta.x;
+            }
+            ImGui::SameLine();
+            visualiser(ImVec2(0, h));
         }
+        if (consoleOpen) {
+            ImGui::InvisibleButton("hsplitter", ImVec2(-1, 4.0f));
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+            }
+            if (ImGui::IsItemActive()) {
+                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+                h += ImGui::GetIO().MouseDelta.y;
+            }
+            
+            consoleWindow(ImVec2(0, 0));
 
-        ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
-        ///ImGui::InputTextMultiline(NULL, text.get(), 1000);
-        //glfwSetWindowSize(window, ImGui::GetWindowSize().x + 4, ImGui::GetWindowSize().y + 4);
-        //glfwSetWindowPos(window, ImGui::GetWindowPos().x - 2, ImGui::GetWindowPos().y - 2);
+        }
+        ImGui::PopStyleVar();
+
         ImGui::End();
 
-
-        ImGui::SetNextWindowClass(&window_class);
-        ImGui::Begin("wow", (bool*)0, window_flags);
-        ImGui::Text("hasada");
-        ImGui::End();
-
-        
-
+        ImGui::PopStyleVar();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -192,6 +198,8 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        if (firstTime)
+            firstTime = false;
     }
 
     ImGui_ImplGlfw_Shutdown();
@@ -213,4 +221,65 @@ void processInput(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || ImGui::IsKeyPressed(ImGuiKey_Escape))
         glfwSetWindowShouldClose(window, true);
+}
+
+
+void consoleWindow(ImVec2 vec2) {
+     ImGuiWindowFlags window_flags = 0;
+     window_flags |= ImGuiWindowFlags_MenuBar;
+     window_flags |= ImGuiWindowFlags_NoTitleBar;
+     window_flags |= ImGuiWindowFlags_NoDecoration;
+     //ImGui::SetNextWindowDockID(mainDockId);
+     ImGui::BeginChild("console", vec2, true, window_flags);
+         ImGui::BeginMenuBar();
+         ImGui::Text("console");
+         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
+
+         float widthNeeded = buttonWidth1 + buttonWidth1;
+         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+
+         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+         if (ImGui::Button(" X ")) {
+            consoleOpen = false;
+         }
+
+         ImGui::EndMenuBar();
+     ImGui::EndChild();
+}
+
+void textEditor(ImVec2 vec2) {
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_MenuBar;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_NoDecoration;
+    ImGui::BeginChild("textEditor", vec2, true, window_flags);
+    ImGui::BeginMenuBar();
+    ImGui::Text("textEditor");
+    ImGui::EndMenuBar();
+
+    ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
+    ImGui::EndChild();
+}
+
+
+void visualiser(ImVec2 vec2) {
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_MenuBar;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_NoDecoration;
+    ImGui::BeginChild("visualiser", vec2, true, window_flags);
+    ImGui::BeginMenuBar();
+    ImGui::Text("visualiser");
+    float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
+
+    float widthNeeded = buttonWidth1 + buttonWidth1;
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
+    if (ImGui::Button(" X ")) {
+        visualiserOpen = false;
+    }
+    ImGui::EndMenuBar();
+
+    ImGui::EndChild();
 }
