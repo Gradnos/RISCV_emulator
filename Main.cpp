@@ -105,6 +105,9 @@ int main()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
 
         ImGui::Begin("Splitter test",(bool*)false, window_flags);
+
+        ImVec2 mainSize = ImGui::GetWindowSize();
+
         ImGui::BeginMenuBar();
         ImGui::Text("RISCV emulator // ");
         if (ImGui::Button("console")) {
@@ -143,11 +146,12 @@ int main()
         ImGui::EndMenuBar();
 
 
-        static float w = 200.0f;
-        static float h = 300.0f;
+        static float ratioW = 0.8f;
+        static float ratioH = 0.8f;
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-        
+        float w = mainSize.x * ratioW;
+        float h = mainSize.y * ratioH;
 
 
         textEditor(ImVec2(w, h));
@@ -161,6 +165,7 @@ int main()
             if (ImGui::IsItemActive()) {
                 ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
                 w += ImGui::GetIO().MouseDelta.x;
+                ratioW = w / mainSize.x;
             }
             ImGui::SameLine();
             visualiser(ImVec2(0, h));
@@ -173,6 +178,7 @@ int main()
             if (ImGui::IsItemActive()) {
                 ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
                 h += ImGui::GetIO().MouseDelta.y;
+                ratioH = h / mainSize.y;
             }
             
             consoleWindow(ImVec2(0, 0));
