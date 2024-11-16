@@ -2,10 +2,14 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "imgui_stdlib.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+
+
+#include "RISCV.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -20,8 +24,7 @@ bool firstTime = true;
 bool maximized = true;
 
 void ShowExampleAppDockSpace(bool* p_open);
-static char text[1024 * 16];
-
+RISCV riscv;
 int main()
 {
     glfwInit();
@@ -31,9 +34,6 @@ int main()
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-
-
 
     GLFWwindow* window = glfwCreateWindow(1, 1, "LearnOpenGL", NULL, NULL);
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -269,6 +269,15 @@ void consoleWindow(ImVec2 vec2) {
      ImGui::EndChild();
 }
 
+
+
+static int InputTextCallback(ImGuiInputTextCallbackData* data)
+{   
+    std::cout << 1;
+    riscv.textGrowSizeIfNeeded();
+    return 0;
+}
+
 void textEditor(ImVec2 vec2) {
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_MenuBar;
@@ -279,7 +288,7 @@ void textEditor(ImVec2 vec2) {
     ImGui::Text("textEditor");
     ImGui::EndMenuBar();
 
-    ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
+    ImGui::InputTextMultiline("##source", riscv.getTextPtr(), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
     ImGui::EndChild();
 }
 
