@@ -18,5 +18,12 @@ int RISCV::textGrowSizeIfNeeded() {
 	return 0;
 }
 
+void RISCV::run() {
+
+}
+
+void RISCV::step() {
+
+}
 
 

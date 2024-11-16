@@ -112,12 +112,20 @@ int main()
         
 
         ImGui::BeginMenuBar();
-        ImGui::Text("RISCV emulator // ");
-        if (ImGui::Button("console")) {
+        ImGui::Text("RISCV emulator /// ");
+        if (ImGui::Button("Console")) {
             consoleOpen = !consoleOpen;
         }
-        if (ImGui::Button("visualiser")) {
+        ImGui::Text(" | ");
+        if (ImGui::Button("Visualiser")) {
             visualiserOpen = !visualiserOpen;
+        }
+        ImGui::Text(" /// ");
+        if (ImGui::Button(" Run > ")) {
+            riscv.run();
+        }
+        if (ImGui::Button(" Step ~ ")) {
+            riscv.step();
         }
 
         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
