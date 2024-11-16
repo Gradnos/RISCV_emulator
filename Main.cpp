@@ -150,15 +150,14 @@ int main()
         static float ratioH = 0.8f;
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-        float w = mainSize.x * ratioW;
-        float h = mainSize.y * ratioH;
+        float w = mainSize.x * ratioW; //text editor width
+        float h = mainSize.y * ratioH; // visualiser height
 
-
-        textEditor(ImVec2(w, h));
-
-        if (visualiserOpen) {
+        if (!consoleOpen && !visualiserOpen) w = 0; // make text editor full width
+        textEditor(ImVec2(w,0));
+        if (consoleOpen || visualiserOpen) {
             ImGui::SameLine();
-            ImGui::InvisibleButton("vsplitter", ImVec2(4.0f, h));
+            ImGui::InvisibleButton("vsplitter", ImVec2(4.0f, -1));
             if (ImGui::IsItemHovered()) {
                 ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
             }
@@ -167,22 +166,31 @@ int main()
                 w += ImGui::GetIO().MouseDelta.x;
                 ratioW = w / mainSize.x;
             }
-            ImGui::SameLine();
-            visualiser(ImVec2(0, h));
-        }
-        if (consoleOpen) {
-            ImGui::InvisibleButton("hsplitter", ImVec2(-1, 4.0f));
-            if (ImGui::IsItemHovered()) {
-                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
-            }
-            if (ImGui::IsItemActive()) {
-                ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
-                h += ImGui::GetIO().MouseDelta.y;
-                ratioH = h / mainSize.y;
-            }
-            
-            consoleWindow(ImVec2(0, 0));
 
+            ImGui::SameLine();
+            ImGui::BeginChild("side", ImVec2(0, 0));
+
+                if (visualiserOpen) {
+                    ImGui::SameLine();
+                    ImGui::SameLine();
+                    if (!consoleOpen) h = 0; // if console not open and visualiser open make height full
+                    visualiser(ImVec2(0, h));
+                }
+                if (consoleOpen == visualiserOpen) { //checks if both of them are open as one of them is true if we are on this line
+                    ImGui::InvisibleButton("hsplitter", ImVec2(-1, 4.0f));
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+                    }
+                    if (ImGui::IsItemActive()) {
+                        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+                        h += ImGui::GetIO().MouseDelta.y;
+                        ratioH = h / mainSize.y;
+                    }
+                }
+                if (consoleOpen) {
+                    consoleWindow(ImVec2(0, 0)); // fill whatever area is left
+                }
+            ImGui::EndChild();
         }
         ImGui::PopStyleVar();
 
