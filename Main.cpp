@@ -105,10 +105,11 @@ int main()
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 
         ImGui::Begin("Splitter test",(bool*)false, window_flags);
-
         ImVec2 mainSize = ImGui::GetWindowSize();
+        
 
         ImGui::BeginMenuBar();
         ImGui::Text("RISCV emulator // ");
@@ -122,9 +123,8 @@ int main()
         float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
         float buttonWidth2 = ImGui::CalcTextSize(" [] ").x;
 
-        float widthNeeded = buttonWidth1 + buttonWidth2 + style.ItemSpacing.x;
+        float widthNeeded = buttonWidth1 + buttonWidth2 + style.FramePadding.x + style.ItemSpacing.x;
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() - style.ItemSpacing.x);
         int xpos, ypos, width, height;
         maximized = false;
         glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &xpos, &ypos, &width, &height);
@@ -140,9 +140,8 @@ int main()
             ImGui::SetWindowPos(ImVec2(0, 0));
             maximized = !maximized;
         }
-
-
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() - style.ItemSpacing.x);
+        widthNeeded = buttonWidth1 + style.FramePadding.x;
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
         if (ImGui::Button(" X ")) {
             glfwSetWindowShouldClose(window, true);
         }
@@ -201,6 +200,7 @@ int main()
             ImGui::EndChild();
         }
         ImGui::PopStyleVar();
+        ImGui::PopStyleVar();
         ImGui::PopStyleColor();
 
         ImGui::End();
@@ -248,6 +248,7 @@ void processInput(GLFWwindow* window)
 
 
 void consoleWindow(ImVec2 vec2) {
+    ImGuiStyle& style = ImGui::GetStyle();
      ImGuiWindowFlags window_flags = 0;
      window_flags |= ImGuiWindowFlags_MenuBar;
      window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -258,9 +259,7 @@ void consoleWindow(ImVec2 vec2) {
          ImGui::Text("console");
          float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
 
-         float widthNeeded = buttonWidth1 + buttonWidth1;
-         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-
+         int widthNeeded = buttonWidth1 + style.FramePadding.x;
          ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
          if (ImGui::Button(" X ")) {
             consoleOpen = false;
@@ -286,6 +285,7 @@ void textEditor(ImVec2 vec2) {
 
 
 void visualiser(ImVec2 vec2) {
+    ImGuiStyle& style = ImGui::GetStyle();
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_MenuBar;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -295,9 +295,7 @@ void visualiser(ImVec2 vec2) {
     ImGui::Text("visualiser");
     float buttonWidth1 = ImGui::CalcTextSize(" X ").x;
 
-    float widthNeeded = buttonWidth1 + buttonWidth1;
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-
+    int widthNeeded = buttonWidth1 + style.FramePadding.x;
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
     if (ImGui::Button(" X ")) {
         visualiserOpen = false;
