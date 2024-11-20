@@ -169,6 +169,7 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MyTokenizer.cpp" />
     <ClCompile Include="RISCV.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +183,7 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="imgui_stdlib.h" />
+    <ClInclude Include="MyTokenizer.h" />
     <ClInclude Include="RISCV.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

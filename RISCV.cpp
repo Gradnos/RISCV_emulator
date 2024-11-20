@@ -3,6 +3,7 @@
 RISCV::RISCV() {
 	m_memory = std::malloc(m_memoryAllocSize);
 	m_registers[0] = 0;
+
 }
 
 RISCV::~RISCV() {
@@ -19,11 +20,17 @@ int RISCV::textGrowSizeIfNeeded() {
 }
 
 void RISCV::run() {
+	m_tokenizer = MyTokenizer(&m_text[0]);
 
+	while (true) {
+		Token t = m_tokenizer.nextToken();
+		std::cout << t.token << std::endl;
+		if (t.tokenType == -1) break;
+	}
+	printf("done \n");
 }
 
 void RISCV::step() {
-
 }
 
 
