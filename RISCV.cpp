@@ -24,7 +24,7 @@ void RISCV::run() {
 
 	while (true) {
 		Token t = m_tokenizer.nextToken();
-		std::cout << t.token << std::endl;
+		std::cout << t.tokenType << " " << t.token << std::endl;
 		if (t.tokenType == -1) break;
 	}
 	printf("done \n");

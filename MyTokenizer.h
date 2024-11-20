@@ -7,11 +7,14 @@ struct Token {
 	std::string token;
 };
 
+
 #define MY_TOKEN_EMPTY 0
 #define MY_TOKEN_REGISTER 1
 #define MY_TOKEN_NUM 2
 #define MY_TOKEN_ACTION 3
+#define MY_TOKEN_ADDRESS 4
 #define MY_TOKEN_DEFINE 5
+#define MY_TOKEN_UNKNOWN 6
 #define MY_TOKEN_END -1
 
 
@@ -32,5 +35,5 @@ private:
 
 
 	bool charInStr(std::string a, const char b);
-
+	int tokenTypeFromStr(std::string& str);
 };
