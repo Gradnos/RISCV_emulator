@@ -25,4 +25,5 @@ private:
 	std::string m_text;
 	void* m_memory;
 	int m_registers[32];
+
 };
