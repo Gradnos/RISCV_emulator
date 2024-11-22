@@ -64,5 +64,3 @@ static void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || ImGui::IsKeyPressed(ImGuiKey_Escape))
         glfwSetWindowShouldClose(window, true);
 }
-
-
