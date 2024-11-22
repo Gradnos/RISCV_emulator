@@ -14,16 +14,13 @@
 #include "UI.h"
 
 
-class Application
-{
+class Application{
 public:
 	Application();
 	~Application();
 	void Run();
 
-
 private:
-
 	RISCV m_riscv;
 	GLFWwindow* m_window = NULL;
 };

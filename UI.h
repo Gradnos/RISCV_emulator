@@ -33,6 +33,12 @@ namespace UI {
 	static int m_WIDTH = 1200;
 	static int m_HEIGHT = 1000;
 	static ImVec2 m_mainWindowSize = { 0,0 };
+
+	static int m_workXpos, m_workYpos, m_workWidth, m_workHeight;
+
+	static float m_sliderRatioV = 0.8f;
+	static float m_sliderRatioH = 0.8f;
+
 	static bool m_consoleOpen = true;
 	static bool m_visualiserOpen = true;
 	static bool m_maximized = true;
@@ -44,6 +50,15 @@ namespace UI {
 	static void consoleWindow(ImVec2 vec2);
 	static void textEditor(ImVec2 vec2);
 	static void visualiser(ImVec2 vec2);
+
 	static void mainMenuBar();
+	static void mainMenuEndButtons();
 	static void mainWindow();
+
+	static void verticalSplitter();
+	static void horizontalSplitter();
+	static void leftBar();
+
+	// updates work area and also returns true if current window is maximized
+	static bool updateWorkArea();
 }
