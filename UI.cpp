@@ -118,9 +118,11 @@ namespace UI {
             }
             ImGui::Text(" /// ");
             if (ImGui::Button(" Run > ")) {
+                m_consoleOpen = true;
                 m_riscv->run();
             }
             if (ImGui::Button(" Step ~ ")) {
+                m_consoleOpen = true;
                 m_riscv->step();
             }
 

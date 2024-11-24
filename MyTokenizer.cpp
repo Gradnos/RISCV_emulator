@@ -1,7 +1,7 @@
 #include "MyTokenizer.h"
 #include <iostream>
 #include <regex>
-
+#include "Console.h"
 
 MyTokenizer::MyTokenizer(const char* text) :
 	m_text(text)
@@ -55,6 +55,9 @@ Token MyTokenizer::nextToken() {
 		return { MY_TOKEN_EMPTY, "0" };
 	}
 
+	// if text ends after the empty space return
+	if (c == 0) return { MY_TOKEN_END, "0" };
+
 
 	
 	int startId = m_currId;
@@ -82,7 +85,6 @@ Token MyTokenizer::nextToken() {
 
 
 int MyTokenizer::tokenTypeFromStr(std::string& s) {
-
 	std::string registerRegex = "((^(?:x)(?:[12]?[0-9]|3[01])$)|^ra$|^sp$|^gp$|^tp$|^t[0-6]$|^s[0-9]$|^fp$|^a[0-7]$|^s1[01]$|^zero$)";
 
 	if (std::regex_match(s, std::regex(registerRegex)))
@@ -108,4 +110,23 @@ int MyTokenizer::tokenTypeFromStr(std::string& s) {
 
 
 	return MY_TOKEN_UNKNOWN;
+}
+
+std::string MyTokenizer::typeName(int type) {
+	if (type == MY_TOKEN_EMPTY)
+		return "Empty";
+	if (type == MY_TOKEN_REGISTER)
+		return "Register";
+	if (type == MY_TOKEN_NUM)
+		return "Number";
+	if (type == MY_TOKEN_ACTION)
+		return "Action";
+	if (type == MY_TOKEN_ADDRESS)
+		return "Address";
+	if (type == MY_TOKEN_DEFINE)
+		return "Define";
+	if (type == MY_TOKEN_UNKNOWN)
+		return "Unknown";
+	if (type == MY_TOKEN_END)
+		return "End";
 }

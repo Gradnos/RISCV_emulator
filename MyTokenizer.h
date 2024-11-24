@@ -24,7 +24,7 @@ public:
 	MyTokenizer(const char* text = NULL);
 	Token nextToken();
 	void setEmpty(const char* empty, const char* emptyStart = NULL);
-
+	std::string typeName(int type);
 
 private:
 	const char* m_text = NULL;

@@ -29,7 +29,7 @@ void RISCV::run() {
 	Console::log("Run.");
 	while (true) {
 		Token t = m_tokenizer.nextToken();
-		std::string a = std::to_string(t.tokenType) + " " + t.token;
+		std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
 		std::cout << a << '\n';
 		Console::log(a);
 		if (t.tokenType == -1) break;
