@@ -31,6 +31,9 @@ namespace UI {
 	static ImGuiContext* m_ctx = NULL;
 	static RISCV* m_riscv = NULL;
 
+	static ImFont* m_mainFont = NULL;
+	static const char* m_mainFontPath = ".\\ImGui\\JetBrainsMono-Medium.ttf";
+
 	static int m_WIDTH = 1200;
 	static int m_HEIGHT = 1000;
 	static ImVec2 m_mainWindowSize = { 0,0 };
@@ -45,8 +48,10 @@ namespace UI {
 	static bool m_maximized = true;
 
 
-	static ImGuiWindowFlags m_myChildWindowFlags = 0 |ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration;
+	static ImGuiWindowFlags m_myChildWindowFlags = 0 |ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 	static ImGuiWindowFlags m_myMainWindowFlags = 0 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
+	static ImGuiInputTextFlags m_ConsoleInputFlags = 0 | ImGuiInputTextFlags_ReadOnly;
+
 
 	static void consoleWindow(ImVec2 vec2);
 	static void textEditor(ImVec2 vec2);

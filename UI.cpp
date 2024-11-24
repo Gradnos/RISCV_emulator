@@ -13,6 +13,14 @@ namespace UI {
         m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
         m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+        
+
+        // load fonts
+        m_io->Fonts->AddFontDefault();
+        m_mainFont = m_io->Fonts->AddFontFromFileTTF(m_mainFontPath, 22.0f);
+        IM_ASSERT(m_mainFont);
+        
+
 
         ImGui::StyleColorsDark();
 
@@ -35,7 +43,6 @@ namespace UI {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        
         mainWindow();
         ImGui::ShowDemoWindow();
         ImGui::Render();
@@ -67,6 +74,8 @@ namespace UI {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::PushFont(m_mainFont);
+
 
         ImGui::Begin("RISCV emulator", (bool*)false, m_myMainWindowFlags);
             m_mainWindowSize = ImGui::GetWindowSize();
@@ -92,6 +101,7 @@ namespace UI {
 
         ImGui::PopStyleVar();
         ImGui::PopStyleVar();
+        ImGui::PopFont();
     }
 
 
@@ -212,7 +222,12 @@ namespace UI {
 
             ImGui::EndMenuBar();
 
-            ImGui::TextUnformatted(Console::getStartPtr(), Console::getEndPtr());
+
+
+            ImGui::InputTextMultiline("##source", Console::getStringPtr(), 
+                ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35),
+                m_ConsoleInputFlags);
+            //ImGui::TextUnformatted(Console::getStartPtr(), Console::getEndPtr());
 
         ImGui::EndChild();
     }

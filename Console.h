@@ -6,8 +6,7 @@ namespace Console {
 	//public
 	void initConsole();
 	void deleteConsole();
-	const char* getStartPtr();
-	const char* getEndPtr();
+	std::string* getStringPtr();
 	void clear();
 	void log(std::string msg);
 
