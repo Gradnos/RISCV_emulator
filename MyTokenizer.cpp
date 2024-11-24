@@ -5,11 +5,7 @@
 
 MyTokenizer::MyTokenizer(const char* text) :
 	m_text(text)
-{
-	printf("%s \n\n\n", text);
-
-
-}
+{}
 
 
 void MyTokenizer::setEmpty(const char* empty, const char* emptyStart) {

@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 
 #include "RISCV.h"
+#include "Console.h"
 
 
 
@@ -36,8 +37,8 @@ namespace UI {
 
 	static int m_workXpos, m_workYpos, m_workWidth, m_workHeight;
 
-	static float m_sliderRatioV = 0.8f;
-	static float m_sliderRatioH = 0.8f;
+	static float m_sliderRatioV = 0.7f;
+	static float m_sliderRatioH = 0.7f;
 
 	static bool m_consoleOpen = true;
 	static bool m_visualiserOpen = true;

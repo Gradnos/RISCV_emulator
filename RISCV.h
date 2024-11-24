@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "MyTokenizer.h"
+#include "Console.h"
 class RISCV {
 public:
 	void run();
 	void step();
 	void reset();
 	std::string* getTextPtr();
-	size_t getTextAllocSize();
 	int textGrowSizeIfNeeded();
 	RISCV();
 	~RISCV();
@@ -23,7 +23,7 @@ private:
 	MyTokenizer m_tokenizer;
 
 	std::string m_text;
-	void* m_memory;
+	void* m_memory = NULL;
 	int m_registers[32];
 
 };

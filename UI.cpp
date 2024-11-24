@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "Console.h"
 
 namespace UI {
 
@@ -25,6 +26,7 @@ namespace UI {
 
         ImGui_ImplGlfw_InitForOpenGL(w, true);
         ImGui_ImplOpenGL3_Init("#version 330");
+        Console::log("Init UI");
     }
 
 
@@ -35,7 +37,7 @@ namespace UI {
         ImGui::NewFrame();
         
         mainWindow();
-
+        ImGui::ShowDemoWindow();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -209,6 +211,9 @@ namespace UI {
                 }
 
             ImGui::EndMenuBar();
+
+            ImGui::TextUnformatted(Console::getStartPtr(), Console::getEndPtr());
+
         ImGui::EndChild();
     }
 

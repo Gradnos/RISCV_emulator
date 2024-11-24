@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Console.h"
 
 static void processInput(GLFWwindow* window);
 
@@ -26,7 +27,10 @@ Application::Application(){
         return ;
     }
 
+    Console::initConsole();
     UI::initUI(m_window, &m_riscv);
+    Console::log("Init Application");
+   
 }
 
 
@@ -39,7 +43,7 @@ void Application::Run() {
     }
 }
 
-Application::~Application(){   
+Application::~Application(){  
     UI::deleteUI();
     glfwTerminate();
 }

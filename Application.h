@@ -22,5 +22,6 @@ public:
 
 private:
 	RISCV m_riscv;
+
 	GLFWwindow* m_window = NULL;
 };

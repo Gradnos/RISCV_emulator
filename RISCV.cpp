@@ -1,13 +1,18 @@
 #include "RISCV.h"
+#include "Console.h"
+
+
 
 RISCV::RISCV() {
+	m_memoryAllocSize = m_initMemorySize;
 	m_memory = std::malloc(m_memoryAllocSize);
 	m_registers[0] = 0;
-
+	Console::log("Init Riscv");
 }
 
 RISCV::~RISCV() {
-	std::free(m_memory);
+	if(m_memory)
+		std::free(m_memory);
 }
 
 std::string* RISCV::getTextPtr() {
@@ -21,13 +26,15 @@ int RISCV::textGrowSizeIfNeeded() {
 
 void RISCV::run() {
 	m_tokenizer = MyTokenizer(&m_text[0]);
-
+	Console::log("Run.");
 	while (true) {
 		Token t = m_tokenizer.nextToken();
-		std::cout << t.tokenType << " " << t.token << std::endl;
+		std::string a = std::to_string(t.tokenType) + " " + t.token;
+		std::cout << a << '\n';
+		Console::log(a);
 		if (t.tokenType == -1) break;
 	}
-	printf("done \n");
+	Console::log("Finish.");
 }
 
 void RISCV::step() {
