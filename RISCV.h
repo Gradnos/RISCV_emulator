@@ -23,7 +23,11 @@ private:
 	bool handleToken(Token& t); 
 	bool handleAction(Token& t);
 
+	// get the tokens you expect. returns true if got what expected, false if not and logs error message
 	bool getNextTokens(Token& t, Token* nextTokens, std::list<int> expected);
+	int registerIdFromStr(std::string s);
+	int addressToInt(std::string s);
+	void* ptrFromAddress(std::string s);
 
 	static const size_t m_initMemorySize = 1024 * 128;
 	size_t m_memoryAllocSize = m_initMemorySize;

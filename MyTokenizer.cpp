@@ -95,7 +95,7 @@ int MyTokenizer::tokenTypeFromStr(std::string& s) {
 	if (std::regex_match(s, std::regex(numberRegex)))
 		return MY_TOKEN_NUM;
 
-	std::string actionRegex = "(^addi?$|^subi?$|^xori?$|^ori?$|^andi?$|^slli?$|^srli?$|^lbu?$|^lhu?$|^lw$|^sb$|^sh$|^sw$|^beq$|^bne$|^blt$|^bge$|^bltu$|^bgeu$|^jalr?$|^ecall$|^mul$|^div$|^rem$|)";
+	std::string actionRegex = "(^addi?$|^subi?$|^xori?$|^ori?$|^andi?$|^slli?$|^srli?$|^lbu?$|^lhu?$|^lw$|^li$|^sb$|^sh$|^sw$|^beq$|^bne$|^blt$|^bge$|^bltu$|^bgeu$|^jalr?$|^ecall$|^mul$|^div$|^rem$|)";
 
 	if (std::regex_match(s, std::regex(actionRegex)))
 		return MY_TOKEN_ACTION;

@@ -5,6 +5,7 @@ RISCV::RISCV() {
 	m_memoryAllocSize = m_initMemorySize;
 	m_memory = std::malloc(m_memoryAllocSize);
 	m_registers[0] = 0;
+	m_registers[2] = m_initMemorySize; // set sp to point to the end of the memory block
 	Console::log("Init Riscv");
 }
 
@@ -96,15 +97,38 @@ bool RISCV::handleAction(Token& t) {
 		bool ok = getNextTokens(t ,nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
 		if (!ok)
 			return false;
-		Console::log("good");
-
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] + std::stoi(nextTokens[2].token);
 	}
+
+	if (t.token == "add") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] + m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "li") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = std::stoi(nextTokens[1].token);
+	}
+
+
 	if (t.token == "lw") {
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
-		Console::log("good");
 
+		m_registers[registerIdFromStr(nextTokens[0].token)] = *(int*)ptrFromAddress(nextTokens[1].token);
+	}
+
+	if (t.token == "sw") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+		*(int*)ptrFromAddress(nextTokens[1].token) = m_registers[registerIdFromStr(nextTokens[0].token)];
+		
 	}
 
 
@@ -114,6 +138,11 @@ bool RISCV::handleAction(Token& t) {
 
 	return true;
 }
+
+void* RISCV::ptrFromAddress(std::string s) {
+	return (void*)((char*)m_memory + addressToInt(s));
+}
+
 
 
 // puts expected tokens in nextTokens Array and returns true if everything went well. 
@@ -132,4 +161,55 @@ bool RISCV::getNextTokens(Token& t, Token* nextTokens, std::list<int> expected) 
 	}
 	return true;
 
+}
+
+// you should be gauranteed that the string is a valid register
+int RISCV::registerIdFromStr(std::string s) {
+	if (s[0] == 'x') {
+		return std::stoi(s.substr(1));
+	}
+	if (s == "zero")
+		return 0;
+	if (s == "ra")
+		return 1;
+	if (s == "sp")
+		return 2;
+	if (s == "gp")
+		return 3;
+	if (s == "tp")
+		return 4;
+	if (s == "t0")
+		return 5;
+	if (s == "t1")
+		return 6;
+	if (s == "t2")
+		return 7;
+	if (s == "s0" || s == "fp")
+		return 8;
+	if (s == "s1")
+		return 9;
+	
+	if (s[0] == 'a') {
+		return std::stoi(s.substr(1)) + 10;
+	}
+
+	if (s[0] == 's') {
+		return std::stoi(s.substr(1)) + 16;
+	}
+
+	if (s[0] == 't') {
+		return std::stoi(s.substr(1)) + 25;
+	}
+
+	return 0;
+}
+//0 1 2 3 4 5	
+//1 2 ( s p )
+// you should be guaranteed that the string is an address like 4(sp) or 12(x10)...
+int RISCV::addressToInt(std::string s) {
+	int splitId = s.find('(');
+	int offset = std::stoi(s.substr(0, splitId)); // int 
+	int baseId = registerIdFromStr(s.substr(splitId + 1, s.length() - splitId - 2));   // register id
+	int base = m_registers[baseId];
+	return base + offset;
 }
