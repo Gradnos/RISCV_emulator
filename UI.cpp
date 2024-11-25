@@ -236,7 +236,7 @@ namespace UI {
 
 
             ImGui::InputTextMultiline("##source", Console::getStringPtr(), 
-                ImVec2(-1, -1),
+                ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35),
                 m_ConsoleInputFlags);
             //ImGui::TextUnformatted(Console::getStartPtr(), Console::getEndPtr());
 
@@ -251,7 +251,7 @@ namespace UI {
             ImGui::BeginMenuBar();
                 ImGui::Text("textEditor");
             ImGui::EndMenuBar();
-            ImGui::InputTextMultiline("##source", m_riscv->getTextPtr(), ImVec2(-1, -1));
+            ImGui::InputTextMultiline("##source", m_riscv->getTextPtr(), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
         ImGui::EndChild();
     }
 

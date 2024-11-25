@@ -5,6 +5,8 @@
 #include <string.h>
 #include "MyTokenizer.h"
 #include "Console.h"
+#include "list"
+
 class RISCV {
 public:
 	void run();
@@ -16,6 +18,12 @@ public:
 	~RISCV();
 private:
 	//size_t m_initTextSize = 1024 * 16;
+
+	//return true if token handled correctly else false
+	bool handleToken(Token& t); 
+	bool handleAction(Token& t);
+
+	bool getNextTokens(Token& t, Token* nextTokens, std::list<int> expected);
 
 	static const size_t m_initMemorySize = 1024 * 128;
 	size_t m_memoryAllocSize = m_initMemorySize;
