@@ -25,19 +25,40 @@ int RISCV::textGrowSizeIfNeeded() {
 }
 
 void RISCV::run() {
+	m_running = true;
 	m_tokenizer = MyTokenizer(&m_text[0]);
 	Console::log("Run.");
 	while (true) {
 		Token t = m_tokenizer.nextToken();
 		std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
-		std::cout << a << '\n';
+		//std::cout << a << '\n';
 		Console::log(a);
-		if (t.tokenType == -1) break;
+		if (t.tokenType == MY_TOKEN_END) break;
 	}
 	Console::log("Finish.");
+	m_running = false;
 }
 
 void RISCV::step() {
+	if (!m_running) {
+		m_running = true;
+		m_tokenizer = MyTokenizer(&m_text[0]);
+		Console::log("Run.");
+	}
+
+	Token t = m_tokenizer.nextToken();
+	std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
+	Console::log(a);
+
+	if (t.tokenType == MY_TOKEN_END) {
+		Console::log("Finish.");
+		m_running = false;
+	}
+}
+
+void RISCV::reset() {
+	Console::log("Reset.");
+	m_running = false;
 }
 
 

@@ -130,6 +130,10 @@ namespace UI {
                 m_consoleOpen = true;
                 m_riscv->step();
             }
+            if (ImGui::Button(" Reset @ ")) {
+                m_consoleOpen = true;
+                m_riscv->reset();
+            }
 
             mainMenuEndButtons();
 
@@ -232,7 +236,7 @@ namespace UI {
 
 
             ImGui::InputTextMultiline("##source", Console::getStringPtr(), 
-                ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35),
+                ImVec2(-1, -1),
                 m_ConsoleInputFlags);
             //ImGui::TextUnformatted(Console::getStartPtr(), Console::getEndPtr());
 
@@ -247,7 +251,7 @@ namespace UI {
             ImGui::BeginMenuBar();
                 ImGui::Text("textEditor");
             ImGui::EndMenuBar();
-            ImGui::InputTextMultiline("##source", m_riscv->getTextPtr(), ImVec2(ImGui::GetWindowSize().x - 15, ImGui::GetWindowSize().y - 35));
+            ImGui::InputTextMultiline("##source", m_riscv->getTextPtr(), ImVec2(-1, -1));
         ImGui::EndChild();
     }
 

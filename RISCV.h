@@ -22,6 +22,8 @@ private:
 
 	MyTokenizer m_tokenizer;
 
+	bool m_running = false;
+
 	std::string m_text;
 	void* m_memory = NULL;
 	int m_registers[32];
