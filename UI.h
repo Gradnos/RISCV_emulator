@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -11,6 +11,7 @@
 #include "RISCV.h"
 #include "Console.h"
 
+#include "Util.h";
 
 
 
@@ -67,4 +68,6 @@ namespace UI {
 
 	// updates work area and also returns true if current window is maximized
 	static bool updateWorkArea();
+
+
 }

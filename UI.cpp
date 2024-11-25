@@ -15,10 +15,15 @@ namespace UI {
         m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         
 
-        // load fonts
+        // load font
         m_io->Fonts->AddFontDefault();
-        m_mainFont = m_io->Fonts->AddFontFromFileTTF(m_mainFontPath, 22.0f);
-        IM_ASSERT(m_mainFont);
+        if (Util::fileExists(m_mainFontPath)) {
+            m_mainFont = m_io->Fonts->AddFontFromFileTTF(m_mainFontPath, 22.0f);
+        }
+        else {
+            Console::log("Failed To Load Font. Reverting To Default Font!\n Make Sure The Font File Is in The Same Folder As .exe");
+            m_mainFont = m_io->Fonts->Fonts[0];
+        }
         
 
 
