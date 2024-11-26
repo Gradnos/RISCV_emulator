@@ -372,10 +372,11 @@ namespace UI {
                     ImGui::TableNextRow();
                     if (m_selectingMem) {
                         if (clipper.DisplayStart == 0 && row < m_selecMemEnd && row >=  m_selecMemStart - 1) {
+                            m_selectedMemOffset = m_riscv->getMemorySize() - m_selecMemEnd;
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
                         }
                         if (clipper.DisplayStart != 0 &&row + 1 < clipper.DisplayStart + m_selecMemEnd && row >= clipper.DisplayStart + m_selecMemStart - 2) {
-
+                            m_selectedMemOffset = m_riscv->getMemorySize() - (clipper.DisplayStart + m_selecMemEnd - 1);
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
                         }
                     }
@@ -395,6 +396,26 @@ namespace UI {
                 }
             }
             ImGui::EndTable();
+        }
+       
+        if (m_selectingMem) {
+            int num = 0;
+            char* ptr = (char*)(m_riscv->getMemoryPtr()) + m_selectedMemOffset;
+            std::cout << m_selectedMemOffset<<std::endl;
+            std::string type = "";
+            if (m_selectLen == 1) {
+                type = "byte";
+                num = *ptr;
+            }
+            if (m_selectLen == 2) {
+                type = "short";
+                num = *(short*)ptr;
+            }
+            if (m_selectLen == 4) {
+                type = "int";
+                num = *(int*)ptr;
+            }
+            ImGui::SetTooltip("%s %d", type, num);
         }
     }
 
@@ -435,20 +456,25 @@ namespace UI {
             }
             else if (m_startMemRow != -1) {// if was already pressing and it started pressing on memory table
                 m_selectingMem = true;
+                m_selectLen = 1;
                 //Console::log("Selecting");
                 if ((m_currMemRow != -1 && m_currMemRow <= m_startMemRow) || (m_currMemRow == -1 && !m_selectUp)) {
 
                     m_selecMemStart = m_currMemRow;
                     m_selecMemEnd = m_startMemRow;
-
+                    
                     if (m_selecMemStart < 0) // if out of bounds
                         m_selecMemStart = m_selecMemEnd;
 
+
                     if (m_startMemRow - m_selecMemStart >= 3) {
                         m_selecMemStart = m_startMemRow - 3;
+                        m_selectLen = 4;
                     }
-                    else if (m_startMemRow - m_selecMemStart > 1)
+                    else if (m_startMemRow - m_selecMemStart >= 1) {
                         m_selecMemStart = m_startMemRow - 1;
+                        m_selectLen = 2;
+                    }
 
                     m_selecMemEnd = m_startMemRow;
                     m_selectUp = false;
@@ -462,9 +488,12 @@ namespace UI {
 
                     if (m_selecMemEnd - m_startMemRow >= 3) {
                         m_selecMemEnd = m_startMemRow + 3;
+                        m_selectLen = 4;
                     }
-                    else if (m_selecMemEnd - m_startMemRow > 1)
+                    else if (m_selecMemEnd - m_startMemRow >= 1) {
                         m_selecMemEnd = m_startMemRow + 1;
+                        m_selectLen = 2;
+                    }
                     m_selectUp = true;
                 }
 

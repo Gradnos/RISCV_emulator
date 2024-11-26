@@ -59,6 +59,8 @@ namespace UI {
 	static int m_selecMemStart = -1;
 	static bool m_selectingMem = false;
 	static bool m_selectUp = false;
+	static int m_selectedMemOffset = 0;
+	static int m_selectLen = 1;
 
 	static bool m_mouseWasDown = false;
 
