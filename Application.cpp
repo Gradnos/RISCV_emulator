@@ -38,6 +38,7 @@ Application::Application(){
 void Application::Run() {
     while (!glfwWindowShouldClose(m_window)){
         processInput(m_window);
+        UI::processInput();
         UI::drawUI();
         glfwPollEvents();
     }

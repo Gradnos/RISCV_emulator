@@ -361,7 +361,6 @@ namespace UI {
             ImGui::TableHeadersRow();
 
             m_currMemRow = ImGui::TableGetHoveredRow();
-            m_currMemCol = ImGui::TableGetHoveredColumn();
 
             ImGuiListClipper clipper;
             int size = m_riscv->getMemorySize();
@@ -371,11 +370,22 @@ namespace UI {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
                 {
                     ImGui::TableNextRow();
-                    if (clipper.DisplayStart == 0 && m_currMemRow == 1) {
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currMemCol);
+                    if (m_selectingMem) {
+                        if (clipper.DisplayStart == 0 && row < m_selecMemEnd && row >=  m_selecMemStart - 1) {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
+                        }
+                        if (clipper.DisplayStart != 0 &&row + 1 < clipper.DisplayStart + m_selecMemEnd && row >= clipper.DisplayStart + m_selecMemStart - 2) {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
+                        }
                     }
-                    if (clipper.DisplayStart != 0 && row + 2 == clipper.DisplayStart + m_currMemRow) {
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currMemCol);
+                    else
+                    {
+                        if (clipper.DisplayStart == 0 && m_currMemRow == 1) {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
+                        }
+                        if (clipper.DisplayStart != 0 && row + 2 == clipper.DisplayStart + m_currMemRow) {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
+                        }
                     }
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("%d", size - row - 1);
@@ -409,5 +419,59 @@ namespace UI {
             ImGui::GetWindowPos().x == m_workXpos && ImGui::GetWindowPos().y == m_workYpos)
             return true;
         return false;
+    }
+
+    void processInput() {
+        handleMemorySelect();
+        
+    }
+
+    void handleMemorySelect() {
+        if (ImGui::IsMouseDown(0)) {
+            if (!m_mouseWasDown) { //if first time pressed
+                m_startMemRow = m_currMemRow;
+                m_mouseWasDown = true;
+            }
+            else if (m_startMemRow != -1) {// if was already pressing and it started pressing on memory table
+                m_selectingMem = true;
+                //Console::log("Selecting");
+                if ((m_currMemRow != -1 && m_currMemRow <= m_startMemRow) || (m_currMemRow == -1 && !m_selectUp)) {
+
+                    m_selecMemStart = m_currMemRow;
+                    m_selecMemEnd = m_startMemRow;
+
+                    if (m_selecMemStart < 0) // if out of bounds
+                        m_selecMemStart = 0;
+
+                    if (m_startMemRow - m_selecMemStart >= 3) {
+                        m_selecMemStart = m_startMemRow - 3;
+                    }
+                    else if (m_startMemRow - m_selecMemStart > 1)
+                        m_selecMemStart = m_startMemRow - 1;
+
+                    m_selecMemEnd = m_startMemRow;
+                    m_selectUp = false;
+                }
+                else
+                {
+                    m_selecMemStart = m_startMemRow;
+                    m_selecMemEnd = m_currMemRow;
+                    if (m_selecMemEnd < 0) // if out of bounds
+                        m_selecMemEnd = m_riscv->getMemorySize();
+
+                    if (m_selecMemEnd - m_startMemRow >= 3) {
+                        m_selecMemEnd = m_startMemRow + 3;
+                    }
+                    else if (m_selecMemEnd - m_startMemRow > 1)
+                        m_selecMemEnd = m_startMemRow + 1;
+                    m_selectUp = true;
+                }
+
+            }
+        }
+        else {
+            m_selectingMem = false;
+            m_mouseWasDown = false;
+        }
     }
 }

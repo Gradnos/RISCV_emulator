@@ -22,6 +22,7 @@ namespace UI {
 	void initUI(GLFWwindow* w, RISCV* r);
 	void drawUI();
 	void deleteUI();
+	void processInput();
 
 
 
@@ -52,8 +53,14 @@ namespace UI {
 	static int m_currRegCol = -1;
 	static int m_currRegRow = -1;
 
-	static int m_currMemCol = -1;
 	static int m_currMemRow = -1;
+	static int m_startMemRow = -1;
+	static int m_selecMemEnd = -1;
+	static int m_selecMemStart = -1;
+	static bool m_selectingMem = false;
+	static bool m_selectUp = false;
+
+	static bool m_mouseWasDown = false;
 
 	static ImGuiWindowFlags m_myChildWindowFlags = 0 |ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 	static ImGuiWindowFlags m_myMainWindowFlags = 0 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
@@ -66,6 +73,7 @@ namespace UI {
 	static void drawRegisters();
 	static void registerSplitter();
 	static void drawMemory();
+	static void handleMemorySelect();
 
 	static void mainMenuBar();
 	static void mainMenuEndButtons();
@@ -81,6 +89,5 @@ namespace UI {
 	static bool updateWorkArea();
 
 	static ImU32 m_highlightCol;
-
 
 }
