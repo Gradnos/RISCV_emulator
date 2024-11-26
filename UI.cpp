@@ -36,6 +36,7 @@ namespace UI {
             m_style->Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
+        m_highlightCol = ImGui::GetColorU32(ImVec4(0.35f, 0.37f, 0.37f, 1.0f));
 
         ImGui_ImplGlfw_InitForOpenGL(w, true);
         ImGui_ImplOpenGL3_Init("#version 330");
@@ -80,15 +81,17 @@ namespace UI {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
         ImGui::PushFont(m_mainFont);
-
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32_BLACK_TRANS);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32_BLACK_TRANS);
 
         ImGui::Begin("RISCV emulator", (bool*)false, m_myMainWindowFlags);
             m_mainWindowSize = ImGui::GetWindowSize();
             mainMenuBar();
 
 
-            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
             ImGui::PushStyleColor(ImGuiCol_MenuBarBg, IM_COL32_BLACK_TRANS);
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+            //ImGui::PushStyleColor(ImGuiCol_MenuBarBg, IM_COL32_BLACK_TRANS);
 
             float w = m_mainWindowSize.x * m_sliderRatioV; //text editor width
             if (!m_consoleOpen && !m_visualiserOpen) 
@@ -104,6 +107,8 @@ namespace UI {
             ImGui::PopStyleColor();
         ImGui::End();
 
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
         ImGui::PopStyleVar();
         ImGui::PopStyleVar();
         ImGui::PopFont();
@@ -178,8 +183,8 @@ namespace UI {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
             w += ImGui::GetIO().MouseDelta.x;
             m_sliderRatioV = w / m_mainWindowSize.x;
-            if (m_sliderRatioV < 0.2) m_sliderRatioV = 0.2;
-            if (m_sliderRatioV > 0.8) m_sliderRatioV = 0.8;
+            if (m_sliderRatioV < 0.1) m_sliderRatioV = 0.1;
+            if (m_sliderRatioV > 0.9) m_sliderRatioV = 0.9;
         }
     }
 
@@ -194,8 +199,8 @@ namespace UI {
             ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
             h += ImGui::GetIO().MouseDelta.y;
             m_sliderRatioH = h / m_mainWindowSize.y;
-            if (m_sliderRatioH < 0.3) m_sliderRatioH = 0.3;
-            if (m_sliderRatioH > 0.8) m_sliderRatioH = 0.8;
+            if (m_sliderRatioH < 0.1) m_sliderRatioH = 0.1;
+            if (m_sliderRatioH > 0.9) m_sliderRatioH = 0.9;
         }
     }
 
@@ -268,8 +273,8 @@ namespace UI {
                     m_visualiserOpen = false;
                 }
             ImGui::EndMenuBar();
-
             drawRegisters();
+            registerSplitter();
             ImGui::SameLine();
             drawMemory();
 
@@ -283,20 +288,28 @@ namespace UI {
         const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("999999999999").x;
         const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
 
-        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg  | ImGuiTableFlags_Resizable;
+
+
+
+        
 
 
         // When using ScrollX or ScrollY we need to specify a size for our table container!
         // Otherwise by default the table will fit all available space, like a BeginChild() call.
-        ImVec2 outer_size = ImVec2(200.0f, 0.0f);
+        ImVec2 outer_size = ImVec2(m_regSliderRatio * ImGui::GetWindowSize().x, 0.0f);
         if (ImGui::BeginTable("Registers", 2, flags, outer_size))
         {
             ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
-            ImGui::TableSetupColumn("Register", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Register");
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None);
             ImGui::TableHeadersRow();
 
             const int* regPtr = m_riscv->getRegistersPtr();
+
+            m_currRegRow = ImGui::TableGetHoveredRow();
+            m_currRegCol = ImGui::TableGetHoveredColumn();
+
 
             // Demonstrate using clipper for large vertical lists
             ImGuiListClipper clipper;
@@ -305,13 +318,22 @@ namespace UI {
             {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
                 {
+                    //std::cout << row << " " << clipper.DisplayStart << " " << m_currRegRow<<std::endl;
                     ImGui::TableNextRow();
+                    if (clipper.DisplayStart == 0 && m_currRegRow == 1) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currRegCol);
+                    }
+                    if (clipper.DisplayStart != 0 && row + 2 == clipper.DisplayStart + m_currRegRow) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currRegCol);
+                    }
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("x%d", row);
                         ImGui::TableSetColumnIndex(1);
                         ImGui::Text("%d", regPtr[row]);
                 }
             }
+
+
             ImGui::EndTable();
         }
     }
@@ -321,10 +343,12 @@ namespace UI {
         const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("999999999999").x;
         const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
 
-        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Hideable;
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable;
 
 
         const char* memPtr= (char*)m_riscv->getMemoryPtr();
+
+
 
         // When using ScrollX or ScrollY we need to specify a size for our table container!
         // Otherwise by default the table will fit all available space, like a BeginChild() call.
@@ -336,6 +360,9 @@ namespace UI {
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None);
             ImGui::TableHeadersRow();
 
+            m_currMemRow = ImGui::TableGetHoveredRow();
+            m_currMemCol = ImGui::TableGetHoveredColumn();
+
             ImGuiListClipper clipper;
             int size = m_riscv->getMemorySize();
             clipper.Begin(size);
@@ -344,6 +371,12 @@ namespace UI {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
                 {
                     ImGui::TableNextRow();
+                    if (clipper.DisplayStart == 0 && m_currMemRow == 1) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currMemCol);
+                    }
+                    if (clipper.DisplayStart != 0 && row + 2 == clipper.DisplayStart + m_currMemRow) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currMemCol);
+                    }
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("%d", size - row - 1);
                         ImGui::TableSetColumnIndex(1);
@@ -351,6 +384,22 @@ namespace UI {
                 }
             }
             ImGui::EndTable();
+        }
+    }
+
+    static void registerSplitter() {
+        float w = ImGui::GetWindowSize().x * m_regSliderRatio; // visualiser height
+        ImGui::SameLine();
+        ImGui::InvisibleButton("regSplitter", ImVec2(4.0f, -1));
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        }
+        if (ImGui::IsItemActive()) {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+            w += ImGui::GetIO().MouseDelta.x;
+            m_regSliderRatio = w / ImGui::GetWindowSize().x;
+            if (m_regSliderRatio < 0.1) m_regSliderRatio = 0.1;
+            if (m_regSliderRatio > 0.9) m_regSliderRatio = 0.9;
         }
     }
 

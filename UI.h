@@ -43,11 +43,17 @@ namespace UI {
 
 	static float m_sliderRatioV = 0.7f;
 	static float m_sliderRatioH = 0.7f;
+	static float m_regSliderRatio = 0.5f;
 
 	static bool m_consoleOpen = true;
 	static bool m_visualiserOpen = true;
 	static bool m_maximized = true;
 
+	static int m_currRegCol = -1;
+	static int m_currRegRow = -1;
+
+	static int m_currMemCol = -1;
+	static int m_currMemRow = -1;
 
 	static ImGuiWindowFlags m_myChildWindowFlags = 0 |ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 	static ImGuiWindowFlags m_myMainWindowFlags = 0 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar;
@@ -58,11 +64,14 @@ namespace UI {
 	static void textEditor(ImVec2 vec2);
 	static void visualiser(ImVec2 vec2);
 	static void drawRegisters();
+	static void registerSplitter();
 	static void drawMemory();
 
 	static void mainMenuBar();
 	static void mainMenuEndButtons();
 	static void mainWindow();
+
+
 
 	static void verticalSplitter();
 	static void horizontalSplitter();
@@ -70,6 +79,8 @@ namespace UI {
 
 	// updates work area and also returns true if current window is maximized
 	static bool updateWorkArea();
+
+	static ImU32 m_highlightCol;
 
 
 }
