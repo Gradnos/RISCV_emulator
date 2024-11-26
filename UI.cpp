@@ -375,6 +375,7 @@ namespace UI {
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
                         }
                         if (clipper.DisplayStart != 0 &&row + 1 < clipper.DisplayStart + m_selecMemEnd && row >= clipper.DisplayStart + m_selecMemStart - 2) {
+
                             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_highlightCol, -1);
                         }
                     }
@@ -441,7 +442,7 @@ namespace UI {
                     m_selecMemEnd = m_startMemRow;
 
                     if (m_selecMemStart < 0) // if out of bounds
-                        m_selecMemStart = 0;
+                        m_selecMemStart = m_selecMemEnd;
 
                     if (m_startMemRow - m_selecMemStart >= 3) {
                         m_selecMemStart = m_startMemRow - 3;
@@ -457,7 +458,7 @@ namespace UI {
                     m_selecMemStart = m_startMemRow;
                     m_selecMemEnd = m_currMemRow;
                     if (m_selecMemEnd < 0) // if out of bounds
-                        m_selecMemEnd = m_riscv->getMemorySize();
+                        m_selecMemEnd = m_selecMemStart;
 
                     if (m_selecMemEnd - m_startMemRow >= 3) {
                         m_selecMemEnd = m_startMemRow + 3;
