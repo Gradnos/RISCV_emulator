@@ -14,6 +14,12 @@ public:
 	void reset();
 	std::string* getTextPtr();
 	int textGrowSizeIfNeeded();
+	int getMemorySize();
+
+
+	const void* getMemoryPtr();
+	const int* getRegistersPtr();
+
 	RISCV();
 	~RISCV();
 private:
@@ -28,6 +34,8 @@ private:
 	int registerIdFromStr(std::string s);
 	int addressToInt(std::string s);
 	void* ptrFromAddress(std::string s);
+
+	void initRegisters();
 
 	static const size_t m_initMemorySize = 1024 * 128;
 	size_t m_memoryAllocSize = m_initMemorySize;

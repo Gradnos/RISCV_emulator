@@ -4,8 +4,7 @@
 RISCV::RISCV() {
 	m_memoryAllocSize = m_initMemorySize;
 	m_memory = std::malloc(m_memoryAllocSize);
-	m_registers[0] = 0;
-	m_registers[2] = m_initMemorySize; // set sp to point to the end of the memory block
+	initRegisters();
 	Console::log("Init Riscv");
 }
 
@@ -13,6 +12,13 @@ RISCV::~RISCV() {
 	if(m_memory)
 		std::free(m_memory);
 }
+
+void RISCV::initRegisters() {
+	m_registers[0] = 0;
+	m_registers[2] = m_initMemorySize;
+}
+
+
 
 std::string* RISCV::getTextPtr() {
 	return &m_text;
@@ -25,6 +31,7 @@ int RISCV::textGrowSizeIfNeeded() {
 
 void RISCV::run() {
 	m_running = true;
+	initRegisters();
 	m_tokenizer = MyTokenizer(&m_text[0]);
 	Console::log("Run.");
 	while (true) {
@@ -47,6 +54,7 @@ void RISCV::run() {
 void RISCV::step() {
 	if (!m_running) {
 		m_running = true;
+		initRegisters();
 		m_tokenizer = MyTokenizer(&m_text[0]);
 		Console::log("Run.");
 	}
@@ -72,6 +80,7 @@ void RISCV::step() {
 void RISCV::reset() {
 	Console::log("Reset.");
 	m_running = false;
+	initRegisters();
 }
 
 
@@ -131,11 +140,41 @@ bool RISCV::handleAction(Token& t) {
 		
 	}
 
+	if (t.token == "lh") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+
+		m_registers[registerIdFromStr(nextTokens[0].token)] = *(short*)ptrFromAddress(nextTokens[1].token);
+	}
+
+	if (t.token == "sh") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+		*(short*)ptrFromAddress(nextTokens[1].token) = m_registers[registerIdFromStr(nextTokens[0].token)];
+	}
+
+	if (t.token == "lb") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+
+		m_registers[registerIdFromStr(nextTokens[0].token)] = *(char*)ptrFromAddress(nextTokens[1].token);
+	}
+
+	if (t.token == "sb") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+		*(char*)ptrFromAddress(nextTokens[1].token) = m_registers[registerIdFromStr(nextTokens[0].token)];
+	}
 
 
 
 
-
+	// make sure x0 stays as 0 at the end of every action
+	m_registers[0] = 0;
 	return true;
 }
 
@@ -212,4 +251,15 @@ int RISCV::addressToInt(std::string s) {
 	int baseId = registerIdFromStr(s.substr(splitId + 1, s.length() - splitId - 2));   // register id
 	int base = m_registers[baseId];
 	return base + offset;
+}
+
+int RISCV::getMemorySize() {
+	return m_memoryAllocSize;
+}
+
+const void* RISCV::getMemoryPtr() {
+	return m_memory;
+}
+const int* RISCV::getRegistersPtr() {
+	return m_registers;
 }

@@ -57,6 +57,8 @@ namespace UI {
 	static void consoleWindow(ImVec2 vec2);
 	static void textEditor(ImVec2 vec2);
 	static void visualiser(ImVec2 vec2);
+	static void drawRegisters();
+	static void drawMemory();
 
 	static void mainMenuBar();
 	static void mainMenuEndButtons();

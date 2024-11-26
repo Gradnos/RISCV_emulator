@@ -268,7 +268,90 @@ namespace UI {
                     m_visualiserOpen = false;
                 }
             ImGui::EndMenuBar();
+
+            drawRegisters();
+            ImGui::SameLine();
+            drawMemory();
+
+
+
+
         ImGui::EndChild();
+    }
+
+    static void drawRegisters() {
+        const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("999999999999").x;
+        const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+
+        // When using ScrollX or ScrollY we need to specify a size for our table container!
+        // Otherwise by default the table will fit all available space, like a BeginChild() call.
+        ImVec2 outer_size = ImVec2(200.0f, 0.0f);
+        if (ImGui::BeginTable("Registers", 2, flags, outer_size))
+        {
+            ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
+            ImGui::TableSetupColumn("Register", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None);
+            ImGui::TableHeadersRow();
+
+            const int* regPtr = m_riscv->getRegistersPtr();
+
+            // Demonstrate using clipper for large vertical lists
+            ImGuiListClipper clipper;
+            clipper.Begin(32);
+            while (clipper.Step())
+            {
+                for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+                {
+                    ImGui::TableNextRow();
+                        ImGui::TableSetColumnIndex(0);
+                        ImGui::Text("x%d", row);
+                        ImGui::TableSetColumnIndex(1);
+                        ImGui::Text("%d", regPtr[row]);
+                }
+            }
+            ImGui::EndTable();
+        }
+    }
+
+
+    static void drawMemory() {
+        const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("999999999999").x;
+        const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+
+        static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Hideable;
+
+
+        const char* memPtr= (char*)m_riscv->getMemoryPtr();
+
+        // When using ScrollX or ScrollY we need to specify a size for our table container!
+        // Otherwise by default the table will fit all available space, like a BeginChild() call.
+        ImVec2 outer_size = ImVec2(0.0f, 0.0f);
+        if (ImGui::BeginTable("Memory", 2, flags, outer_size))
+        {
+            ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
+            ImGui::TableSetupColumn("Address", ImGuiTableColumnFlags_None);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None);
+            ImGui::TableHeadersRow();
+
+            ImGuiListClipper clipper;
+            int size = m_riscv->getMemorySize();
+            clipper.Begin(size);
+            while (clipper.Step())
+            {
+                for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+                {
+                    ImGui::TableNextRow();
+                        ImGui::TableSetColumnIndex(0);
+                        ImGui::Text("%d", size - row - 1);
+                        ImGui::TableSetColumnIndex(1);
+                        ImGui::Text("%d", *(char*)(memPtr + size - row - 1));
+                }
+            }
+            ImGui::EndTable();
+        }
     }
 
     static bool updateWorkArea() {
