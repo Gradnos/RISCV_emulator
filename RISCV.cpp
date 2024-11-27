@@ -120,6 +120,133 @@ bool RISCV::handleAction(Token& t) {
 		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] + m_registers[registerIdFromStr(nextTokens[2].token)];
 	}
 
+	if (t.token == "subi") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] - std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "sub") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] - m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "xori") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] ^ std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "xor") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] ^ m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "ori") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] | std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "or") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] | m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "andi") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] & std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "and") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] & m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "slli") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] << std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "sll") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] << m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "srli") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] >> std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "srl") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] >> m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+
+	if (t.token == "muli") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] * std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "mul") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] * m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "divi") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] / std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "div") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] / m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
+	if (t.token == "remi") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] % std::stoi(nextTokens[2].token);
+	}
+
+	if (t.token == "rem") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+		m_registers[registerIdFromStr(nextTokens[0].token)] = m_registers[registerIdFromStr(nextTokens[1].token)] % m_registers[registerIdFromStr(nextTokens[2].token)];
+	}
+
 	if (t.token == "li") {
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_NUM });
 		if (!ok)
