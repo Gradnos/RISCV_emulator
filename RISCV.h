@@ -43,6 +43,8 @@ private:
 	size_t m_memoryAllocSize = m_initMemorySize;
 
 	MyTokenizer m_tokenizer;
+	int m_neededSizeAboveAddr = 0;
+
 
 	bool m_running = false;
 

@@ -129,6 +129,7 @@ bool RISCV::handleAction(Token& t) {
 
 
 	if (t.token == "lw") {
+		m_neededSizeAboveAddr = 4;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -137,6 +138,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 	if (t.token == "sw") {
+		m_neededSizeAboveAddr = 4;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -145,6 +147,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 	if (t.token == "lh") {
+		m_neededSizeAboveAddr = 2;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -153,6 +156,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 	if (t.token == "sh") {
+		m_neededSizeAboveAddr = 2;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -160,6 +164,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 	if (t.token == "lb") {
+		m_neededSizeAboveAddr = 1;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -168,6 +173,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 	if (t.token == "sb") {
+		m_neededSizeAboveAddr = 1;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
 		if (!ok)
 			return false;
@@ -194,11 +200,28 @@ bool RISCV::getNextTokens(Token& t, Token* nextTokens, std::list<int> expected) 
 	auto it = expected.begin();
 	for (int i = 0; it != expected.end(); i++) {
 		Token currT = m_tokenizer.nextToken();
-		if (currT.tokenType != *it) {
+		if (currT.tokenType != *it) {  // check the type is what we expect
 			Console::log(t.token + " Expected " + m_tokenizer.typeName(*it) + " As Argument #" + std::to_string(i+1) + 
-				" But Got " + m_tokenizer.typeName(currT.tokenType) + " " + currT.token + ".");
+				", But Got " + m_tokenizer.typeName(currT.tokenType) + " " + currT.token + ".");
 			return false;
 		}
+		if (currT.tokenType == MY_TOKEN_ADDRESS) { // if address check validity
+			int offset = addressToInt(currT.token);
+			if (offset < 0 || offset >= m_memoryAllocSize) {
+				Console::log(t.token + " Expected " + "Correct Address As Argument #" + std::to_string(i + 1) +
+					", But Got Out Of Bounds Address " + currT.token + ".");
+				return false;
+			}
+			int spaceAbove = m_memoryAllocSize - offset;
+			if (spaceAbove < m_neededSizeAboveAddr) {
+				Console::log(t.token + " Expected " + "Correct Address With Space Of " + std::to_string(m_neededSizeAboveAddr) 
+					+" As Argument #" + std::to_string(i + 1) + ", But Got Out Smaller Free Size At Address " + currT.token + ".");
+				return false;
+			}
+		}
+
+
+
 		nextTokens[i] = currT;
 		it++;
 	}
