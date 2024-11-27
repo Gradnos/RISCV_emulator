@@ -29,6 +29,10 @@ int RISCV::textGrowSizeIfNeeded() {
 	return 0;
 }
 
+int RISCV::readRegister(int id) {
+	return m_registers[id];
+}
+
 void RISCV::run() {
 	m_running = true;
 	initRegisters();

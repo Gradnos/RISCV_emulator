@@ -37,6 +37,8 @@ namespace UI {
         }
 
         m_highlightCol = ImGui::GetColorU32(ImVec4(0.35f, 0.37f, 0.37f, 1.0f));
+        m_spColor = ImGui::GetColorU32(ImVec4(0.25f, 0.22f, 0.32f, 1.0f));
+
 
         ImGui_ImplGlfw_InitForOpenGL(w, true);
         ImGui_ImplOpenGL3_Init("#version 330");
@@ -318,8 +320,15 @@ namespace UI {
             {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
                 {
+
+
+                    
                     //std::cout << row << " " << clipper.DisplayStart << " " << m_currRegRow<<std::endl;
                     ImGui::TableNextRow();
+                        if(row == 2)
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_spColor, -1);
+
+
                     if (clipper.DisplayStart == 0 && m_currRegRow == 1) {
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currRegCol);
                     }
@@ -364,12 +373,21 @@ namespace UI {
 
             ImGuiListClipper clipper;
             int size = m_riscv->getMemorySize();
+
+            int spId = size - m_riscv->readRegister(2) - 1;
+
             clipper.Begin(size);
             while (clipper.Step())
             {
                 for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
                 {
                     ImGui::TableNextRow();
+
+
+                    if(row == spId)
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, m_spColor, -1);
+
+
                     if (m_selectingMem) {
                         if (clipper.DisplayStart == 0 && row < m_selecMemEnd && row >=  m_selecMemStart - 1) {
                             m_selectedMemOffset = m_riscv->getMemorySize() - m_selecMemEnd;

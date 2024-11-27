@@ -91,5 +91,6 @@ namespace UI {
 	static bool updateWorkArea();
 
 	static ImU32 m_highlightCol;
+	static ImU32 m_spColor;
 
 }

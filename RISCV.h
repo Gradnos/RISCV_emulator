@@ -20,6 +20,8 @@ public:
 	const void* getMemoryPtr();
 	const int* getRegistersPtr();
 
+	int readRegister(int id);
+
 	RISCV();
 	~RISCV();
 private:
