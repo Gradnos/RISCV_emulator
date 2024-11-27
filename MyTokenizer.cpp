@@ -85,30 +85,32 @@ Token MyTokenizer::nextToken() {
 
 
 int MyTokenizer::tokenTypeFromStr(std::string& s) {
-	std::string registerRegex = "((^(?:x)(?:[12]?[0-9]|3[01])$)|^ra$|^sp$|^gp$|^tp$|^t[0-6]$|^s[0-9]$|^fp$|^a[0-7]$|^s1[01]$|^zero$)";
+	std::string registerRegex = "(((?:x)(?:[12]?[0-9]|3[01]))|ra|sp|gp|tp|t[0-6]|s[0-9]|fp|a[0-7]|s1[01]|zero)";
 
-	if (std::regex_match(s, std::regex(registerRegex)))
+	if (std::regex_match(s, std::regex("^"+registerRegex+"$")))
 		return MY_TOKEN_REGISTER;
 
 
-	std::string numberRegex = "(^([+-]?[1-9][0-9]*|0)$)";
-	if (std::regex_match(s, std::regex(numberRegex)))
+	std::string numberRegex = "([+-]?[1-9][0-9]*|0)";
+	if (std::regex_match(s, std::regex("^"+numberRegex+"$")))
 		return MY_TOKEN_NUM;
 
+	std::string actionRegex = "(addi?|subi?|xori?|ori?|andi?|slli?|srli?|lw|li|sb|sh|sw|beq|bne|blt|bge|jalr?|ecall|muli?|divi?|remi?|call)";
 
-	
-
-	std::string actionRegex = "(^addi?$|^subi?$|^xori?$|^ori?$|^andi?$|^slli?$|^srli?$|^lw$|^li$|^sb$|^sh$|^sw$|^beq$|^bne$|^blt$|^bge$|^jalr?$|^ecall$|^muli?$|^divi?$|^rem?$|)";
-
-	if (std::regex_match(s, std::regex(actionRegex)))
+	if (std::regex_match(s, std::regex("^"+actionRegex+"$")))
 		return MY_TOKEN_ACTION;
 
-	std::string defineRegex = "^[a-zA-Z_][a-zA-Z_0-9]+:$";
-	if (std::regex_match(s, std::regex(defineRegex)))
+	std::string nameRegex = "([a-zA-Z_][a-zA-Z_0-9]+)";
+
+	if (std::regex_match(s, std::regex("^" + nameRegex + "$")))
+		return MY_TOKEN_NAME;
+
+	std::string defineRegex = "(" + nameRegex + ":)";
+	if (std::regex_match(s, std::regex("^"+defineRegex+"$")))
 		return MY_TOKEN_DEFINE;
 
-	std::string addressRegex = "^([+-]?[1-9][0-9]*|0)\\((((?:x)(?:[12]?[0-9]|3[01]))|ra|sp|gp|tp|t[0-6]|s[0-9]|fp|a[0-7]|s1[01]|zero)\\)";
-	if (std::regex_match(s, std::regex(addressRegex)))
+	std::string addressRegex = "(" + numberRegex + "\\(" + registerRegex + "\\))" ;
+	if (std::regex_match(s, std::regex("^"+addressRegex+"$")))
 		return MY_TOKEN_ADDRESS;
 
 
@@ -128,6 +130,8 @@ std::string MyTokenizer::typeName(int type) {
 		return "Address";
 	if (type == MY_TOKEN_DEFINE)
 		return "Define";
+	if (type == MY_TOKEN_NAME)
+		return "Name";
 	if (type == MY_TOKEN_UNKNOWN)
 		return "Unknown";
 	if (type == MY_TOKEN_END)

@@ -14,7 +14,8 @@ struct Token {
 #define MY_TOKEN_ACTION 3
 #define MY_TOKEN_ADDRESS 4
 #define MY_TOKEN_DEFINE 5
-#define MY_TOKEN_UNKNOWN 6
+#define MY_TOKEN_NAME 6
+#define MY_TOKEN_UNKNOWN 7
 #define MY_TOKEN_END -1
 
 
