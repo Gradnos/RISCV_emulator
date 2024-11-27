@@ -336,7 +336,7 @@ namespace UI {
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, m_highlightCol, m_currRegCol);
                     }
                         ImGui::TableSetColumnIndex(0);
-                        ImGui::Text("x%d", row);
+                        ImGui::Text("x%d%s", row,regNames[row]);
                         ImGui::TableSetColumnIndex(1);
                         ImGui::Text("%d", regPtr[row]);
                 }
