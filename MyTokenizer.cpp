@@ -3,6 +3,8 @@
 #include <regex>
 #include "Console.h"
 
+
+
 MyTokenizer::MyTokenizer(const char* text) :
 	m_text(text)
 {}
@@ -29,8 +31,18 @@ bool MyTokenizer::charInStr(std::string a, const char b) {
 
 }
 
+void  MyTokenizer::setText(const char* text) {
+	m_text = text;
+	m_currId = 0;
+}
 
+void  MyTokenizer::setIndex(int id) {
+	m_currId = id;
+}
 
+int MyTokenizer::getIndex() {
+	return m_currId;
+}
 
 Token MyTokenizer::nextToken() {
 
@@ -71,9 +83,6 @@ Token MyTokenizer::nextToken() {
 	int strSize = m_currId - startId + 1;
 
 
-
-
-
 	std::string tok;
 	tok.resize(strSize);
 	tok.assign(m_text + startId, m_text + m_currId);
@@ -95,7 +104,7 @@ int MyTokenizer::tokenTypeFromStr(std::string& s) {
 	if (std::regex_match(s, std::regex("^"+numberRegex+"$")))
 		return MY_TOKEN_NUM;
 
-	std::string actionRegex = "(addi?|subi?|xori?|ori?|andi?|slli?|srli?|lw|li|sb|sh|sw|beq|bne|blt|bge|jalr?|ecall|muli?|divi?|remi?|call)";
+	std::string actionRegex = "(addi?|subi?|xori?|ori?|andi?|slli?|srli?|lw|li|sb|sh|sw|beq|bne|blt|ble|bge|bgt|jump|ecall|ret|muli?|divi?|remi?|call)";
 
 	if (std::regex_match(s, std::regex("^"+actionRegex+"$")))
 		return MY_TOKEN_ACTION;
@@ -112,7 +121,6 @@ int MyTokenizer::tokenTypeFromStr(std::string& s) {
 	std::string addressRegex = "(" + numberRegex + "\\(" + registerRegex + "\\))" ;
 	if (std::regex_match(s, std::regex("^"+addressRegex+"$")))
 		return MY_TOKEN_ADDRESS;
-
 
 	return MY_TOKEN_UNKNOWN;
 }

@@ -25,18 +25,19 @@ std::string* RISCV::getTextPtr() {
 }
 
 
-int RISCV::textGrowSizeIfNeeded() {
-	return 0;
-}
-
 int RISCV::readRegister(int id) {
 	return m_registers[id];
 }
 
 void RISCV::run() {
+	bool compiled = compile();
+	if (!compiled) {
+		Console::log("Compilation Failed.");
+		return;
+	}
 	m_running = true;
 	initRegisters();
-	m_tokenizer = MyTokenizer(&m_text[0]);
+	m_tokenizer.setText(&m_text[0]);
 	Console::log("Run.");
 	while (true) {
 		Token t = m_tokenizer.nextToken();
@@ -89,6 +90,24 @@ void RISCV::reset() {
 
 
 
+bool RISCV::handleTokenForCompile(Token& t) {
+	if (t.tokenType == MY_TOKEN_ACTION) {
+		bool ok = checkActionValidity(t);
+		if (!ok)
+			return false;
+	}
+	else if (t.tokenType == MY_TOKEN_DEFINE) {
+		handleDefine(t);
+	}
+	// unexpected token
+	if (t.tokenType == MY_TOKEN_UNKNOWN || t.tokenType == MY_TOKEN_NAME || t.tokenType == MY_TOKEN_ADDRESS || t.tokenType == MY_TOKEN_NUM || t.tokenType == MY_TOKEN_REGISTER) {
+		std::string type = m_tokenizer.typeName(t.tokenType);
+		Console::log(m_tokenizer.typeName(t.tokenType) + " " + t.token + " Found at unexpected place.");
+		return false;
+	}
+	return true;
+}
+
 
 
 bool RISCV::handleToken(Token& t) {
@@ -97,11 +116,26 @@ bool RISCV::handleToken(Token& t) {
 		if (!ok) 
 			return false;
 	}
-
+	// unexpected token
+	if (t.tokenType == MY_TOKEN_UNKNOWN || t.tokenType == MY_TOKEN_NAME || t.tokenType == MY_TOKEN_ADDRESS || t.tokenType == MY_TOKEN_NUM || t.tokenType == MY_TOKEN_REGISTER) {
+		std::string type = m_tokenizer.typeName(t.tokenType);
+		Console::log(m_tokenizer.typeName(t.tokenType)+ " " + t.token + " Found at unexpected place.");
+		return false;
+	}
 
 	return true;
+}
 
+void RISCV::handleDefine(Token& t) {
+	std::string cp = t.token;
+	cp.resize(cp.length() - 1);// remove the ':' from define
+	int id = m_tokenizer.getIndex();
+	defines[cp] = id;
+}
 
+void RISCV::call(std::string name, bool storeRa) {
+	if(storeRa) m_registers[1] = m_tokenizer.getIndex();
+	m_tokenizer.setIndex(defines[name]);
 }
 
 bool RISCV::handleAction(Token& t) {
@@ -308,7 +342,41 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 
+	if (t.token == "jump") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_NAME });
+		if (!ok)
+			return false;
+		std::string name = nextTokens[0].token;
+		call(name, 0);
+	}
 
+	if (t.token == "call") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_NAME });
+		if (!ok)
+			return false;
+		std::string name = nextTokens[0].token;
+		call(name,1);
+	}
+	
+	if (t.token == "ret") {
+		m_tokenizer.setIndex(m_registers[1]);
+	}
+
+	//"beq" || t.token == "bne" || t.token == "blt" || t.token == "bge"
+	if (t.token == "beq" || t.token == "bne" || t.token == "blt" || t.token == "bge" || t.token == "ble" || t.token == "bgt") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NAME });
+		if (!ok)
+			return false;
+		int a = m_registers[registerIdFromStr(nextTokens[0].token)];
+		int b = m_registers[registerIdFromStr(nextTokens[1].token)];
+		std::string name = nextTokens[2].token;
+		if (t.token == "beq" && a == b) call(name,0);
+		if (t.token == "bne" && a != b) call(name,0);
+		if (t.token == "blt" && a < b) call(name,0);
+		if (t.token == "ble" && a <= b) call(name,0);
+		if (t.token == "bgt" && a > b) call(name,0);
+		if (t.token == "bge" && a >= b) call(name,0);
+	}
 
 	// make sure x0 stays as 0 at the end of every action
 	m_registers[0] = 0;
@@ -332,7 +400,7 @@ bool RISCV::getNextTokens(Token& t, Token* nextTokens, std::list<int> expected) 
 				", But Got " + m_tokenizer.typeName(currT.tokenType) + " " + currT.token + ".");
 			return false;
 		}
-		if (currT.tokenType == MY_TOKEN_ADDRESS) { // if address check validity
+		if (currT.tokenType == MY_TOKEN_ADDRESS && m_running) { // if is address and is running check validity
 			int offset = addressToInt(currT.token);
 			if (offset < 0 || offset >= m_memoryAllocSize) {
 				Console::log(t.token + " Expected " + "Correct Address As Argument #" + std::to_string(i + 1) +
@@ -347,8 +415,6 @@ bool RISCV::getNextTokens(Token& t, Token* nextTokens, std::list<int> expected) 
 			}
 		}
 
-
-
 		nextTokens[i] = currT;
 		it++;
 	}
@@ -358,9 +424,8 @@ bool RISCV::getNextTokens(Token& t, Token* nextTokens, std::list<int> expected) 
 
 // you should be gauranteed that the string is a valid register
 int RISCV::registerIdFromStr(std::string s) {
-	if (s[0] == 'x') {
+	if (s[0] == 'x')
 		return std::stoi(s.substr(1));
-	}
 	if (s == "zero")
 		return 0;
 	if (s == "ra")
@@ -380,20 +445,13 @@ int RISCV::registerIdFromStr(std::string s) {
 	if (s == "s0" || s == "fp")
 		return 8;
 	if (s == "s1")
-		return 9;
-	
-	if (s[0] == 'a') {
+		return 9;	
+	if (s[0] == 'a')
 		return std::stoi(s.substr(1)) + 10;
-	}
-
-	if (s[0] == 's') {
+	if (s[0] == 's')
 		return std::stoi(s.substr(1)) + 16;
-	}
-
-	if (s[0] == 't') {
+	if (s[0] == 't')
 		return std::stoi(s.substr(1)) + 25;
-	}
-
 	return 0;
 }
 //0 1 2 3 4 5	
@@ -416,4 +474,69 @@ const void* RISCV::getMemoryPtr() {
 }
 const int* RISCV::getRegistersPtr() {
 	return m_registers;
+}
+
+bool RISCV::checkActionValidity(Token& t) {
+	Token nextTokens[5];
+	if (t.token == "addi" || t.token == "subi" || t.token == "xori" || t.token == "ori" || t.token == "andi" || t.token == "slli" || t.token == "srli" || t.token == "muli" || t.token == "divi" || t.token == "remi") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		printf("ok = %d\n", ok);
+		if (!ok)
+			return false;
+	}
+
+	if (t.token == "add" || t.token == "sub" || t.token == "xor" || t.token == "or" || t.token == "and" || t.token == "sll" || t.token == "srl" || t.token == "mul" || t.token == "div" || t.token == "rem") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_REGISTER });
+		if (!ok)
+			return false;
+	}
+
+	if (t.token == "li") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_NUM });
+		if (!ok)
+			return false;
+	}
+
+	if (t.token == "lw"  || t.token == "sw" || t.token == "lh" || t.token == "sh" || t.token == "lb" || t.token == "sb") {
+		m_neededSizeAboveAddr = 4;
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_ADDRESS });
+		if (!ok)
+			return false;
+	}
+
+	if (t.token == "beq" || t.token == "bne" || t.token == "blt" || t.token == "bge" || t.token == "ble" || t.token == "bgt") {
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NAME });
+		if (!ok)
+			return false;
+	}
+
+	if (t.token == "jump" || t.token == "call" ) {
+		m_neededSizeAboveAddr = 4;
+		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_NAME });
+		if (!ok)
+			return false;
+	}
+
+	return true;
+}
+
+bool RISCV::compile() {
+	Console::log("Start Compiling.");
+	m_tokenizer.setText(&m_text[0]);
+	while (true) {
+		Token t = m_tokenizer.nextToken();
+
+		std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
+		Console::log(a);
+
+		if (t.tokenType == MY_TOKEN_END) break;
+		bool ok = handleTokenForCompile(t);
+		if (!ok) {
+			Console::log("Error in compilation. Aborting.");
+			return false;
+		}
+	}
+
+	Console::log("Compilation Successful.");
+	return true;
 }

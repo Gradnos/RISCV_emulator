@@ -17,6 +17,7 @@ namespace Console {
 	}
 
 	void log(std::string msg) {
+		printf(msg.c_str());
 		m_text += msg + "\n>";
 	}
 }

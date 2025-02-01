@@ -6,6 +6,8 @@
 #include "MyTokenizer.h"
 #include "Console.h"
 #include "list"
+#include "vector"
+#include "map"
 
 class RISCV {
 public:
@@ -13,9 +15,10 @@ public:
 	void step();
 	void reset();
 	std::string* getTextPtr();
-	int textGrowSizeIfNeeded();
 	int getMemorySize();
 
+	bool checkActionValidity(Token& t);
+	bool handleTokenForCompile(Token& t);
 
 	const void* getMemoryPtr();
 	const int* getRegistersPtr();
@@ -30,6 +33,7 @@ private:
 	//return true if token handled correctly else false
 	bool handleToken(Token& t); 
 	bool handleAction(Token& t);
+	void handleDefine(Token& t);
 
 	// get the tokens you expect. returns true if got what expected, false if not and logs error message
 	bool getNextTokens(Token& t, Token* nextTokens, std::list<int> expected);
@@ -38,6 +42,12 @@ private:
 	void* ptrFromAddress(std::string s);
 
 	void initRegisters();
+	bool compile();
+
+	void call(std::string name, bool storeRa);
+
+	std::map<std::string, int> defines;
+	
 
 	static const size_t m_initMemorySize = 1024 * 128;
 	size_t m_memoryAllocSize = m_initMemorySize;
