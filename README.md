@@ -45,13 +45,13 @@ addi,  sp,   sp,   -4 , ,, ,
 addi sp,
 sp,   -4
 ```
-*only one or zero comma(',') is in between the instructions ans arguments*
+*only one or zero comma(',') is in between the instructions and arguments*
 
 **Inorrect way**
 ```
 addi, ,sp, ,sp, -4
 ```
-*more than one comma(',') is in between the instruction ans argument so the tokenizer sees it as an empty argument and shows an error*
+*more than one comma(',') is in between the instruction and argument so the tokenizer sees it as an empty argument and shows an error*
 
 ---
 
@@ -59,7 +59,7 @@ addi, ,sp, ,sp, -4
 
 > - Both methods only work on windows.
 ---
-**First method**
+**First method** (Needs Visual Studio)
 1. **Download** the repository.
 2. Open the solution and run the project.
 
