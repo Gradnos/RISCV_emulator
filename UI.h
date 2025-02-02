@@ -35,6 +35,7 @@ namespace UI {
 
 	static ImFont* m_mainFont = NULL;
 	static const char* m_mainFontPath = ".\\ImGui\\JetBrainsMono-Medium.ttf";
+	static const char* m_secondaryFontPath = "JetBrainsMono-Medium.ttf";
 
 	static int m_WIDTH = 1200;
 	static int m_HEIGHT = 1000;

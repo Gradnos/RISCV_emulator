@@ -20,8 +20,10 @@ namespace UI {
         if (Util::fileExists(m_mainFontPath)) {
             m_mainFont = m_io->Fonts->AddFontFromFileTTF(m_mainFontPath, 22.0f);
         }
-        else {
-            Console::log("Failed To Load Font. Reverting To Default Font!\n Make Sure The Font File Is in The Same Folder As .exe");
+        else if (Util::fileExists(m_secondaryFontPath)) {
+            m_mainFont = m_io->Fonts->AddFontFromFileTTF(m_secondaryFontPath, 22.0f);
+        }else {
+            //Console::log("Failed To Load Font. Reverting To Default Font!\n Make Sure The Font File Is in The Same Folder As .exe");
             m_mainFont = m_io->Fonts->Fonts[0];
         }
         
@@ -52,7 +54,6 @@ namespace UI {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         mainWindow();
-        ImGui::ShowDemoWindow();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
