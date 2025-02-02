@@ -59,11 +59,7 @@ addi, ,sp, ,sp, -4
 
 > - Both methods only work on windows.
 ---
-**First method** (Needs Visual Studio)
-1. **Download** the repository.
-2. Open the solution and run the project.
 
-**Second method**
 1. **Download** the repository.
 2. Open the "**App**" folder and run "**RISCV.exe**". (dont move the files, but you can make a shortcut).
 
