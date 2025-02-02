@@ -66,4 +66,6 @@ addi, ,sp, ,sp, -4
 **Second method**
 1. **Download** the repository.
 2. Open the "**App**" folder and run "**RISCV.exe**". (dont move the files, but you can make a shortcut).
+
+> You can find test assembly code in the "Tests" folder.
 ---
