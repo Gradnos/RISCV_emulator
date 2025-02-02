@@ -51,7 +51,7 @@ sp,   -4
 ```
 addi, ,sp, ,sp, -4
 ```
-*more than one comma(',') is in between the instruction ans argument so the tokenizer sees it as an empty argument and shows an error*
+*more than one comma(',') is in between the instruction and argument so the tokenizer sees it as an empty argument and shows an error*
 
 ---
 
@@ -60,7 +60,7 @@ addi, ,sp, ,sp, -4
 > - Both methods only work on windows.
 > - Sometimes the window might be too small and you might have to resize it on the first open.
 ---
-**First method**
+**First method** (Needs Visual Studio)
 1. **Download** the repository.
 2. Open the solution and run the project.
 
