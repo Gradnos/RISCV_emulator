@@ -45,7 +45,7 @@ addi,  sp,   sp,   -4 , ,, ,
 addi sp,
 sp,   -4
 ```
-*only one or zero comma(',') is in between the instructions ans arguments*
+*only one or zero comma(',') is in between the instructions and arguments*
 
 **Inorrect way**
 ```
