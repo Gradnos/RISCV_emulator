@@ -2,7 +2,7 @@
 
 namespace Console {
 	void initConsole() {
-		m_text = ">";
+		m_text = "";
 		log("Init Console");
 	}
 
@@ -15,9 +15,10 @@ namespace Console {
 	void clear() {
 		m_text = ">";
 	}
-
+	void print(std::string msg) {
+		m_text += msg;
+	}
 	void log(std::string msg) {
-		printf(msg.c_str());
-		m_text += msg + "\n>";
+		m_text += ">" + msg + "\n";
 	}
 }

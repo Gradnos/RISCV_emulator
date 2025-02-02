@@ -57,6 +57,7 @@ private:
 
 
 	bool m_running = false;
+	bool m_returned = false;
 
 	std::string m_text;
 	void* m_memory = NULL;

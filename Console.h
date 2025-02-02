@@ -9,6 +9,7 @@ namespace Console {
 	std::string* getStringPtr();
 	void clear();
 	void log(std::string msg);
+	void print(std::string msg);
 	//private
 	static	std::string m_text = ">";
 }

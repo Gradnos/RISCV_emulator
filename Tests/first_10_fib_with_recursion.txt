@@ -1,0 +1,64 @@
+addi sp sp -8
+li x10 0
+sw x10 0(sp)
+li x10 10
+sw x10 4(sp)
+for_start:
+
+lw x10 0(sp)
+lw x11 4(sp)
+bge x10 x11 for_end
+
+addi sp sp -4
+sw x10 0(sp)
+call fib
+addi sp sp 4
+
+li x10 1
+ecall
+li x10 11
+li x11 32
+ecall
+
+lw x10 0(sp)
+addi x10 x10 1
+sw x10 0(sp)
+jump for_start
+for_end:
+
+li x10 11
+li x11 10
+ecall
+
+li x10 10
+ecall
+
+
+fib:
+lw x10 0(sp)
+li x11 1
+bgt x10 x11 rec 
+ret
+
+rec:
+addi sp sp -12 
+sw ra 8(sp)
+addi sp sp -4
+lw x10 16(sp)
+addi x10 x10 -1 
+sw x10 0(sp)
+call fib 
+sw x11 8(sp) 
+
+lw x10 16(sp)
+addi x10 x10 -2 
+sw x10 0(sp)
+call fib
+sw x11 4(sp)
+addi sp sp 4
+lw ra 8(sp)
+lw x11 0(sp)
+lw x12 4(sp)
+add x11 x11 x12
+addi sp sp 12
+ret

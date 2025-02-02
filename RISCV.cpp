@@ -30,6 +30,7 @@ int RISCV::readRegister(int id) {
 }
 
 void RISCV::run() {
+	m_tokenizer.setText(&m_text[0]);
 	bool compiled = compile();
 	if (!compiled) {
 		Console::log("Compilation Failed.");
@@ -43,17 +44,21 @@ void RISCV::run() {
 		Token t = m_tokenizer.nextToken();
 		std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
 		//std::cout << a << '\n';
-		Console::log(a);
-		if (t.tokenType == MY_TOKEN_END) break;
+		//Console::log(a);
 		bool ok = handleToken(t);
 		if (!ok) {
 			Console::log("Error.");
 			m_running = false;
 			return;
 		}
+
+		if (t.tokenType == MY_TOKEN_END || m_returned) {
+			Console::log("Finish.");
+			m_returned = false;
+			m_running = false;
+			return;
+		}
 	}
-	Console::log("Finish.");
-	m_running = false;
 }
 
 void RISCV::step() {
@@ -61,22 +66,24 @@ void RISCV::step() {
 		m_running = true;
 		initRegisters();
 		m_tokenizer = MyTokenizer(&m_text[0]);
+		compile();
+		m_tokenizer = MyTokenizer(&m_text[0]);
 		Console::log("Run.");
 	}
-
 	Token t = m_tokenizer.nextToken();
-	std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
+	std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token;
 	Console::log(a);
 	
-	if (t.tokenType == MY_TOKEN_END) {
-		Console::log("Finish.");
-		m_running = false;
-		return;
-	}
 
 	bool ok = handleToken(t);
 	if (!ok) {
 		Console::log("Error.");
+		m_running = false;
+		return;
+	}
+	if (t.tokenType == MY_TOKEN_END || m_returned) {
+		Console::log("Finish.");
+		m_returned = false;
 		m_running = false;
 		return;
 	}
@@ -378,6 +385,16 @@ bool RISCV::handleAction(Token& t) {
 		if (t.token == "bge" && a >= b) call(name,0);
 	}
 
+	if (t.token == "ecall") {
+		int op = m_registers[10];
+		if (op == 10) m_returned = true;
+		if (op == 1) Console::print(std::to_string(m_registers[11]));
+		char c = m_registers[11];
+		std::string st = "";
+		st += char(m_registers[11]);
+		if (op == 11) Console::print(st);
+	}
+
 	// make sure x0 stays as 0 at the end of every action
 	m_registers[0] = 0;
 	return true;
@@ -527,7 +544,7 @@ bool RISCV::compile() {
 		Token t = m_tokenizer.nextToken();
 
 		std::string a = m_tokenizer.typeName(t.tokenType) + "-" + t.token + "-";
-		Console::log(a);
+		//Console::log(a);
 
 		if (t.tokenType == MY_TOKEN_END) break;
 		bool ok = handleTokenForCompile(t);

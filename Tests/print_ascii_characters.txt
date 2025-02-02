@@ -1,0 +1,22 @@
+li x11 30
+li x12 130
+li x13 79
+li x10 11
+for_start:
+bge x11 x12 for_end
+
+ecall
+
+bne x11 x13 skip_endl
+add x14 x11 x0
+li x11 10
+ecall
+add x11 x14 x0
+skip_endl:
+
+addi x11 x11 1
+jump for_start
+for_end:
+
+li x11 10
+ecall
