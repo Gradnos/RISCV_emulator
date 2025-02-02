@@ -86,6 +86,7 @@ namespace UI {
         ImGui::PushFont(m_mainFont);
         ImGui::PushStyleColor(ImGuiCol_HeaderHovered, IM_COL32_BLACK_TRANS);
         ImGui::PushStyleColor(ImGuiCol_HeaderActive, IM_COL32_BLACK_TRANS);
+        ImGui::SetNextWindowSizeConstraints(ImVec2(900, 600), ImVec2(FLT_MAX,FLT_MAX));
 
         ImGui::Begin("RISCV emulator", (bool*)false, m_myMainWindowFlags);
             m_mainWindowSize = ImGui::GetWindowSize();
@@ -420,7 +421,6 @@ namespace UI {
         if (m_selectingMem) {
             int num = 0;
             char* ptr = (char*)(m_riscv->getMemoryPtr()) + m_selectedMemOffset;
-            std::cout << m_selectedMemOffset<<std::endl;
             std::string type = "";
             if (m_selectLen == 1) {
                 type = "byte";

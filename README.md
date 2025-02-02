@@ -58,7 +58,6 @@ addi, ,sp, ,sp, -4
 ## Usage
 
 > - Both methods only work on windows.
-> - Sometimes the window might be too small and you might have to resize it on the first open.
 ---
 **First method**
 1. **Download** the repository.

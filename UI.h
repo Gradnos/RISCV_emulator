@@ -39,7 +39,7 @@ namespace UI {
 
 	static int m_WIDTH = 1200;
 	static int m_HEIGHT = 1000;
-	static ImVec2 m_mainWindowSize = { 0,0 };
+	static ImVec2 m_mainWindowSize = { 800,1000 };
 
 	static int m_workXpos, m_workYpos, m_workWidth, m_workHeight;
 

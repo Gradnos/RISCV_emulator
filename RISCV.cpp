@@ -497,7 +497,6 @@ bool RISCV::checkActionValidity(Token& t) {
 	Token nextTokens[5];
 	if (t.token == "addi" || t.token == "subi" || t.token == "xori" || t.token == "ori" || t.token == "andi" || t.token == "slli" || t.token == "srli" || t.token == "muli" || t.token == "divi" || t.token == "remi") {
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_REGISTER, MY_TOKEN_REGISTER, MY_TOKEN_NUM });
-		printf("ok = %d\n", ok);
 		if (!ok)
 			return false;
 	}

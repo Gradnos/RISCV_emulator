@@ -1,5 +1,5 @@
 #include "Application.h"
-int main() {
+int WinMain() {
 	Application app;
 	app.Run();
 }
