@@ -57,7 +57,7 @@ addi, ,sp, ,sp, -4
 
 ## Usage
 
-> - Both methods only work on windows.
+> - only work on windows.
 ---
 
 1. **Download** the repository.
