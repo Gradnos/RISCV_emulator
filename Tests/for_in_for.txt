@@ -1,0 +1,61 @@
+main:
+    addi sp sp -16
+    li x10 6
+    sw x10 12(sp)
+    li x10 91
+    li x15 1
+    sw x10 8(sp)
+    sw x15 4(sp)
+    sw x15 0(sp)
+    call for1_start
+
+for1_start:
+    lw x10 4(sp)
+    lw x11 12(sp)
+    bge x10 x11 for1_end
+
+    li x10 10
+    lw x11 4(sp)
+    mul x11 x10 x11
+    li x10 1
+    ecall
+
+    li x10 11
+    li x11 32
+    ecall
+
+    li x10 65
+    sw x10 0(sp)
+    call for2_start
+
+for2_start:
+    lw x10 0(sp)
+    lw x11 8(sp)
+    bge x10 x11 for2_end
+
+    lb x11 0(sp)
+    li x10 11
+    ecall
+
+    lw x10 0(sp)
+    li x11 1
+    add x10 x10 x11
+    sw x10 0(sp)
+    j for2_start
+
+for1_end:
+    addi sp sp 16
+    li x10 10
+    ecall
+
+for2_end:
+    lw x10 4(sp)
+    li x11 1
+    add x10 x10 x11
+    sw x10 4(sp)
+    
+    li x11 10
+    li x10 11
+    ecall
+
+    j for1_start

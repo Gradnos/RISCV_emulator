@@ -104,7 +104,7 @@ int MyTokenizer::tokenTypeFromStr(std::string& s) {
 	if (std::regex_match(s, std::regex("^"+numberRegex+"$")))
 		return MY_TOKEN_NUM;
 
-	std::string actionRegex = "(addi?|subi?|xori?|ori?|andi?|slli?|srli?|lw|li|sb|sh|sw|beq|bne|blt|ble|bge|bgt|jump|ecall|ret|muli?|divi?|remi?|call)";
+	std::string actionRegex = "(addi?|subi?|xori?|ori?|andi?|slli?|srli?|lw|li|lb|sb|sh|sw|beq|bne|blt|ble|bge|bgt|jump|j|ecall|ret|muli?|divi?|remi?|call)";
 
 	if (std::regex_match(s, std::regex("^"+actionRegex+"$")))
 		return MY_TOKEN_ACTION;

@@ -349,7 +349,7 @@ bool RISCV::handleAction(Token& t) {
 	}
 
 
-	if (t.token == "jump") {
+	if (t.token == "jump" || t.token == "j") {
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_NAME });
 		if (!ok)
 			return false;
@@ -527,7 +527,7 @@ bool RISCV::checkActionValidity(Token& t) {
 			return false;
 	}
 
-	if (t.token == "jump" || t.token == "call" ) {
+	if (t.token == "jump" || t.token == "call" || t.token == "j") {
 		m_neededSizeAboveAddr = 4;
 		bool ok = getNextTokens(t, nextTokens, { MY_TOKEN_NAME });
 		if (!ok)
